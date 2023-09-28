@@ -23,9 +23,10 @@ module main
    output 	vout13_v_p
    );
 
-   assign status[7:1] = 0;
+   assign status[7:2] = 0;
       
    wire   ref_clk;
+   wire   adc0_clk;
    
    IBUFDS ref_ibufds_inst
      (
@@ -33,13 +34,19 @@ module main
       .I (ref_p  ),
       .IB(ref_n  )
       );
-
+   
    pps #(.FREQ(192000000)) pps_192_inst
      (
       .clk(ref_clk  ),
       .pps(status[0])
       );
-      
+
+   pps #(.FREQ(12000000)) pps_12_inst
+     (
+      .clk(adc0_clk ),
+      .pps(status[1])
+      );
+   
    design_main design_main_inst
      (
       .adc0_clk_clk_n  (adc0_clk_clk_n  ),
@@ -63,7 +70,9 @@ module main
       .RX_0_tdata      (32'd0),
       .RX_0_tvalid     (1'b0),
       .RX_0_tready     (),
-      
+   
+      .clk_adc0_12M    (adc0_clk        ),
+   
       .reg_clk         (),
       .reg_rstn        (),
       .regs_out        (),
