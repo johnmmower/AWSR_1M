@@ -2,7 +2,7 @@
 set_property -dict {PACKAGE_PIN AL16 IOSTANDARD LVDS DIFF_TERM_ADV TERM_100} [get_ports ref_p]
 set_property -dict {PACKAGE_PIN AK17 IOSTANDARD LVDS DIFF_TERM_ADV TERM_100} [get_ports sys_p]
 
-create_clock -period 5.000 -name ref_clk [get_ports ref_p]
+create_clock -period 4.650 -name ref_clk [get_ports ref_p]
 
 set_property -dict {PACKAGE_PIN AR13 IOSTANDARD LVCMOS18} [get_ports {status[0]}]
 set_property -dict {PACKAGE_PIN AP13 IOSTANDARD LVCMOS18} [get_ports {status[1]}]

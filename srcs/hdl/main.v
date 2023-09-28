@@ -35,13 +35,13 @@ module main
       .IB(ref_n  )
       );
    
-   pps #(.FREQ(192000000)) pps_192_inst
+   pps #(.FREQ(215040000)) pps_192_inst
      (
       .clk(ref_clk  ),
       .pps(status[0])
       );
 
-   pps #(.FREQ(12000000)) pps_12_inst
+   pps #(.FREQ(13440000)) pps_12_inst
      (
       .clk(adc0_clk ),
       .pps(status[1])
