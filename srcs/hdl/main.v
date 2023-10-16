@@ -19,8 +19,6 @@ module main
    input 	vin0_01_v_p,
    input 	vin0_23_v_n,
    input 	vin0_23_v_p,
-   output 	vout12_v_n,
-   output 	vout12_v_p,
    output 	vout13_v_n,
    output 	vout13_v_p
    );
@@ -31,6 +29,10 @@ module main
    wire   sys_clk;
    wire   adc0_clk;
    wire   dac1_clk;
+   
+   reg [13:0] dac_0_addr;
+   always @(posedge ref_clk)
+       dac_0_addr <= dac_0_addr + 'b1;
    
    //
    (* MARK_DEBUG = "TRUE" *)
@@ -81,14 +83,13 @@ module main
       .sysref_in_diff_p(sysref_in_diff_p),
       .vin0_01_v_n     (vin0_01_v_n     ),
       .vin0_01_v_p     (vin0_01_v_p     ),
-      //.vin0_23_v_n     (vin0_23_v_n     ),
-      //.vin0_23_v_p     (vin0_23_v_p     ),
+      .vin0_23_v_n     (vin0_23_v_n     ),
+      .vin0_23_v_p     (vin0_23_v_p     ),
       .vout13_v_n      (vout13_v_n      ),
       .vout13_v_p      (vout13_v_p      ),
-      .vout12_v_n      (vout12_v_n      ),
-      .vout12_v_p      (vout12_v_p      ),
       
-      .dac_0_addr      (14'd0),   
+      
+      .dac_0_addr      (dac_0_addr      ),   
       .adc_0           (),
       .adc_1           (),
       .user_sysref_adc (sys_clk_t1      ),

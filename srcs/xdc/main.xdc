@@ -13,3 +13,4 @@ set_property -dict {PACKAGE_PIN AN16 IOSTANDARD LVCMOS18} [get_ports {status[5]}
 set_property -dict {PACKAGE_PIN AN17 IOSTANDARD LVCMOS18} [get_ports {status[6]}]
 set_property -dict {PACKAGE_PIN AV15 IOSTANDARD LVCMOS18} [get_ports {status[7]}]
 
+
