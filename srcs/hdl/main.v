@@ -19,14 +19,25 @@ module main
    input 	vin0_01_v_p,
    input 	vin0_23_v_n,
    input 	vin0_23_v_p,
+   output 	vout12_v_n,
+   output 	vout12_v_p,
    output 	vout13_v_n,
    output 	vout13_v_p
    );
 
-   assign status[7:2] = 0;
+   assign status[7:3] = 0;
       
    wire   ref_clk;
+   wire   sys_clk;
    wire   adc0_clk;
+   wire   dac1_clk;
+   
+   //
+   (* MARK_DEBUG = "TRUE" *)
+   reg   sys_clk_t1;
+   always @(posedge ref_clk)
+       sys_clk_t1 <= sys_clk;
+   //
    
    IBUFDS ref_ibufds_inst
      (
@@ -35,16 +46,29 @@ module main
       .IB(ref_n  )
       );
    
-   pps #(.FREQ(215040000)) pps_192_inst
+   IBUFDS sys_ibufds_inst
+     (
+      .O (sys_clk),
+      .I (sys_p  ),
+      .IB(sys_n  )
+      );
+   
+   pps #(.FREQ(215040000)) pps_215_04_inst
      (
       .clk(ref_clk  ),
       .pps(status[0])
       );
 
-   pps #(.FREQ(13440000)) pps_12_inst
+   pps #(.FREQ(13440000)) pps_adc_13_44_inst
      (
       .clk(adc0_clk ),
       .pps(status[1])
+      );
+   
+   pps #(.FREQ(13440000)) pps_dac_13_44_inst
+     (
+      .clk(dac1_clk ),
+      .pps(status[2])
       );
    
    design_main design_main_inst
@@ -57,21 +81,25 @@ module main
       .sysref_in_diff_p(sysref_in_diff_p),
       .vin0_01_v_n     (vin0_01_v_n     ),
       .vin0_01_v_p     (vin0_01_v_p     ),
-      .vin0_23_v_n     (vin0_23_v_n     ),
-      .vin0_23_v_p     (vin0_23_v_p     ),
+      //.vin0_23_v_n     (vin0_23_v_n     ),
+      //.vin0_23_v_p     (vin0_23_v_p     ),
       .vout13_v_n      (vout13_v_n      ),
       .vout13_v_p      (vout13_v_p      ),
+      .vout12_v_n      (vout12_v_n      ),
+      .vout12_v_p      (vout12_v_p      ),
       
       .dac_0_addr      (14'd0),   
       .adc_0           (),
       .adc_1           (),
+      .user_sysref_adc (sys_clk_t1      ),
       .ref_clk         (ref_clk         ),
       .ref_rstn        (1'b1),
       .RX_0_tdata      (32'd0),
       .RX_0_tvalid     (1'b0),
       .RX_0_tready     (),
    
-      .clk_adc0_12M    (adc0_clk        ),
+      .clk_adc0_13M44  (adc0_clk        ),
+      .clk_dac1_13M44  (dac1_clk        ),
    
       .reg_clk         (),
       .reg_rstn        (),
