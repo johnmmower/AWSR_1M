@@ -7,27 +7,39 @@ module main
    input 	sys_n,
    input 	sys_p,
    
-   output [7:0] status,
-
    input 	adc0_clk_clk_n,
    input 	adc0_clk_clk_p,
+   input 	dac0_clk_clk_n,
+   input 	dac0_clk_clk_p,
    input 	dac1_clk_clk_n,
    input 	dac1_clk_clk_p,
+   
    input 	sysref_in_diff_n,
    input 	sysref_in_diff_p,
+   
    input 	vin0_01_v_n,
    input 	vin0_01_v_p,
    input 	vin0_23_v_n,
    input 	vin0_23_v_p,
-   output 	vout13_v_n,
-   output 	vout13_v_p
+   
+   output 	vout00_v_n,
+   output 	vout00_v_p,
+   output   vout10_v_n,
+   output   vout10_v_p,
+   //output   vout12_v_n,
+   //output   vout12_v_p,
+   output   vout13_v_n,
+   output   vout13_v_p,
+   
+   output [7:0] status
    );
 
-   assign status[7:3] = 0;
+   assign status[7:4] = 0;
       
    wire   ref_clk;
    wire   sys_clk;
    wire   adc0_clk;
+   wire   dac0_clk;
    wire   dac1_clk;
    
    reg [13:0] dac_0_addr;
@@ -67,28 +79,45 @@ module main
       .pps(status[1])
       );
    
-   pps #(.FREQ(13440000)) pps_dac_13_44_inst
+   pps #(.FREQ(13440000)) pps_dac0_13_44_inst
      (
-      .clk(dac1_clk ),
+      .clk(dac0_clk ),
       .pps(status[2])
       );
    
+   pps #(.FREQ(13440000)) pps_dac1_13_44_inst
+     (
+      .clk(dac1_clk ),
+      .pps(status[3])
+      );
+   
+  
+      
    design_main design_main_inst
      (
       .adc0_clk_clk_n  (adc0_clk_clk_n  ),
       .adc0_clk_clk_p  (adc0_clk_clk_p  ),
+      .dac0_clk_clk_n  (dac0_clk_clk_n  ),
+      .dac0_clk_clk_p  (dac0_clk_clk_p  ),
       .dac1_clk_clk_n  (dac1_clk_clk_n  ),
       .dac1_clk_clk_p  (dac1_clk_clk_p  ),
+      
       .sysref_in_diff_n(sysref_in_diff_n),
       .sysref_in_diff_p(sysref_in_diff_p),
+      
       .vin0_01_v_n     (vin0_01_v_n     ),
       .vin0_01_v_p     (vin0_01_v_p     ),
       .vin0_23_v_n     (vin0_23_v_n     ),
       .vin0_23_v_p     (vin0_23_v_p     ),
+      .vout00_v_n      (vout00_v_n      ),
+      .vout00_v_p      (vout00_v_p      ),
+      .vout10_v_n      (vout10_v_n      ),
+      .vout10_v_p      (vout10_v_p      ),
+      //.vout12_v_n      (vout12_v_n      ),
+      //.vout12_v_p      (vout12_v_p      ),
       .vout13_v_n      (vout13_v_n      ),
       .vout13_v_p      (vout13_v_p      ),
-      
-      
+       
       .dac_0_addr      (dac_0_addr      ),   
       .adc_0           (),
       .adc_1           (),
@@ -100,8 +129,9 @@ module main
       .RX_0_tready     (),
    
       .clk_adc0_13M44  (adc0_clk        ),
+      .clk_dac0_13M44  (dac0_clk        ),
       .clk_dac1_13M44  (dac1_clk        ),
-   
+      
       .reg_clk         (),
       .reg_rstn        (),
       .regs_out        (),
