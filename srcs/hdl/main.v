@@ -24,34 +24,69 @@ module main
    
    output 	vout00_v_n,
    output 	vout00_v_p,
-   output   vout10_v_n,
-   output   vout10_v_p,
-   //output   vout12_v_n,
-   //output   vout12_v_p,
-   output   vout13_v_n,
-   output   vout13_v_p,
+   output 	vout10_v_n,
+   output 	vout10_v_p,
+   output 	vout13_v_n,
+   output 	vout13_v_p,
    
-   output [7:0] status
+   output [7:0] status,
+   
+   input 	pmod1_3         // pps
    );
 
    assign status[7:4] = 0;
       
    wire   ref_clk;
    wire   sys_clk;
+   reg 	  sys_clk_s;
+
    wire   adc0_clk;
    wire   dac0_clk;
    wire   dac1_clk;
+
+   wire   pps_os;
    
+   wire        a_reg_clk;
+   wire        a_reg_rstn;
+   wire [1023:0] a_reg_from_ps;
+   wire [1023:0] a_reg_to_ps;
+   wire [31:0] 	 a_nextsec;
+
+   // tmp
    reg [13:0] dac_0_addr;
    always @(posedge ref_clk)
        dac_0_addr <= dac_0_addr + 'b1;
+   // END: tmp
    
-   //
-   (* MARK_DEBUG = "TRUE" *)
-   reg   sys_clk_t1;
    always @(posedge ref_clk)
-       sys_clk_t1 <= sys_clk;
-   //
+       sys_clk_s <= sys_clk;
+
+   control control_inst
+     (
+      .reg_clk    (a_reg_clk    ),
+      .reg_rstn   (a_reg_rstn   ),
+      .reg_from_ps(a_reg_from_ps),
+      .reg_to_ps  (a_reg_to_ps  ),
+      .nextsec    (a_nextsec    )
+      );
+      
+   debounce debounce_pps
+     (
+      .clk(ref_clk),
+      .in (pmod1_3),
+      .re (pps_os )
+      );
+   
+   timebase timebase_inst  
+     (
+      .clk        (ref_clk    ),
+      .a_nextsec  (a_nextsec  ),
+      .pps        (pps_os     ),
+      .tic        (),
+      .sec_l      ()
+      .ppstime_l  (),
+      .l_valid    ()
+   );
    
    IBUFDS ref_ibufds_inst
      (
@@ -89,9 +124,7 @@ module main
      (
       .clk(dac1_clk ),
       .pps(status[3])
-      );
-   
-  
+      );  
       
    design_main design_main_inst
      (
@@ -113,15 +146,13 @@ module main
       .vout00_v_p      (vout00_v_p      ),
       .vout10_v_n      (vout10_v_n      ),
       .vout10_v_p      (vout10_v_p      ),
-      //.vout12_v_n      (vout12_v_n      ),
-      //.vout12_v_p      (vout12_v_p      ),
       .vout13_v_n      (vout13_v_n      ),
       .vout13_v_p      (vout13_v_p      ),
        
       .dac_0_addr      (dac_0_addr      ),   
       .adc_0           (),
       .adc_1           (),
-      .user_sysref_adc (sys_clk_t1      ),
+      .user_sysref_adc (sys_clk_s       ),
       .ref_clk         (ref_clk         ),
       .ref_rstn        (1'b1),
       .RX_0_tdata      (32'd0),
@@ -132,60 +163,12 @@ module main
       .clk_dac0_13M44  (dac0_clk        ),
       .clk_dac1_13M44  (dac1_clk        ),
       
-      .reg_clk         (),
-      .reg_rstn        (),
-      .regs_out        (),
-      .regs_in         (1024'd0)
+      .reg_clk         (a_reg_clk       ),
+      .reg_rstn        (a_reg_rstn      ),
+      .regs_out        (a_reg_from_ps   ),
+      .regs_in         (a_reg_to_ps     )
       );
 
 endmodule
 
-   
 
-
-/*
-    wire   xclk;
-   wire   xrst;
-   (* MARK_DEBUG = "TRUE" *)
-   wire   trig;
-   (* MARK_DEBUG = "TRUE" *)
-   wire [31:0] adc_0;
-   (* MARK_DEBUG = "TRUE" *)
-   wire [13:0] dac_0_addr;
-   wire [31:0] rx_0_tdata;
-   wire        rx_0_tvalid = 0; // duh
-   wire [15:0] rxsmps;
-   wire [13:0] txsmps;
-      
-   wire        reg_clk;
-   wire        reg_rstn;
-   wire [1023:0] regs_out;
-   wire [1023:0] regs_in;
-     
-   (* MARK_DEBUG = "TRUE" *) wire paen;
-    
-   control control_inst
-     (
-      .reg_clk     (reg_clk ),
-      .reg_rstn    (reg_rstn),
-      .regs_from_ps(regs_out),
-      .regs_to_ps  (regs_in ),
-      .clk         (xclk    ),
-      .rxsmps      (rxsmps  ),
-      .txsmps      (txsmps  ),
-      .rst         (xrst    ),
-      .trig        (trig    )
-      );
-
-   tx_ctrl tx_ctrl_inst
-     (
-      .clk    (xclk      ),
-      .rst    (xrst      ),
-      .trig   (trig      ),
-      .txsmps (txsmps    ),
-      .tx_addr(dac_0_addr),
-      .pa_en  (paen      )
-      );
-      
-
-*/
