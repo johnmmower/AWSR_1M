@@ -1,4 +1,4 @@
-
+`define CLKF 215040000
 
 module main
   (
@@ -37,6 +37,7 @@ module main
    assign status[7:4] = 0;
       
    wire   ref_clk;
+   wire   ref_rst; /////////////////////////
    wire   sys_clk;
    reg 	  sys_clk_s;
 
@@ -83,7 +84,7 @@ module main
       .a_nextsec  (a_nextsec  ),
       .pps        (pps_os     ),
       .tic        (),
-      .sec_l      ()
+      .sec_l      (),
       .ppstime_l  (),
       .l_valid    ()
    );
@@ -102,30 +103,39 @@ module main
       .IB(sys_n  )
       );
    
-   pps #(.FREQ(215040000)) pps_215_04_inst
+   pps #(.FREQ(`CLKF)) pps_215_04_inst
      (
       .clk(ref_clk  ),
       .pps(status[0])
       );
 
-   pps #(.FREQ(13440000)) pps_adc_13_44_inst
+   pps #(.FREQ(`CLKF/16)) pps_adc_13_44_inst
      (
       .clk(adc0_clk ),
       .pps(status[1])
       );
    
-   pps #(.FREQ(13440000)) pps_dac0_13_44_inst
+   pps #(.FREQ(`CLKF/16)) pps_dac0_13_44_inst
      (
       .clk(dac0_clk ),
       .pps(status[2])
       );
    
-   pps #(.FREQ(13440000)) pps_dac1_13_44_inst
+   pps #(.FREQ(`CLKF/16)) pps_dac1_13_44_inst
      (
       .clk(dac1_clk ),
       .pps(status[3])
       );  
-      
+
+   rotator_encoder #(.CLKF(`CLKF)) rotator_encoder_inst
+     (
+      .clk        (ref_clk),
+      .srst       (ref_rst),
+      .rx         (1'b0   ), //////////// connect
+      .azimuth    (),
+      .azimuth_vld()
+      );
+         
    design_main design_main_inst
      (
       .adc0_clk_clk_n  (adc0_clk_clk_n  ),
