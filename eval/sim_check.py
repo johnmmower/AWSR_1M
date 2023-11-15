@@ -21,13 +21,19 @@ with open("int.dat", "r") as fid:
         v = float(l[0]) + 1j*float(l[1])
         out[n] = v
 
+SC = 0 #20*np.log10( N * N * np.sqrt(2) )
+        
 INS = np.zeros((Nmon,N))
-for i in range(Nmon):
-    INS[i] = 20*np.log10(np.abs(np.fft.fftshift(np.fft.fft(ins[i]*np.hamming(N)))))
-INS -= np.max(INS)
+for i in range(1):#(Nmon):
+    INS[i] = 20*np.log10(np.abs(np.fft.fftshift(np.fft.fft(ins[i])))) - SC
+#INS -= np.max(INS)
     
-OUT = 20*np.log10(np.abs(np.fft.fftshift(np.fft.fft(out*np.hamming(N)))))
-OUT -= np.max(OUT)
+OUT = 20*np.log10(np.abs(np.fft.fftshift(np.fft.fft(out)))) - SC
+#OUT -= np.max(OUT)
+
+mx = np.ceil(max(np.max(INS), np.max(OUT))/5)*5
+mn = mx - 50
+ml = np.argmax(OUT)
 
 Fs = 215.04
 f = np.linspace(-Fs/2, Fs/2, N)
@@ -35,5 +41,9 @@ f = np.linspace(-Fs/2, Fs/2, N)
 for i in range(Nmon):
     plot(f, INS[i],'k')
 plot(f, OUT, 'r')
-axis([f[0], f[-1], -65, 5])
+axis([f[0], f[-1], mn, mx])
+annotate('%.1f dB' % np.max(OUT), xy=(f[ml], OUT[np.argmax(OUT)]), arrowprops=dict(arrowstyle='->'), xytext=(20, mx-5))
+annotate('%.1f dB' % np.max(INS), xy=(f[ml], INS[0,np.argmax(INS[0])]), arrowprops=dict(arrowstyle='->'), xytext=(-35, mx-5))
+xlabel('MHz')
+ylabel('relative power dB')
 show()
