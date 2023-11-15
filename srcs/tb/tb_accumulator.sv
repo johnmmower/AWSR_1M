@@ -3,11 +3,10 @@
 
 `define CLKF 215040000
 
-`define F    20000000.0
 `define PI   3.1416
 
 `define SIG  -70.0
-`define SNR  -3.0
+`define SNR  -10.0
 
 `define DEPTH 4096
 `define COUNT 16
@@ -30,6 +29,7 @@ module tb_accumulator;
    int 		      randint;
    real 	      randreal;
 
+   localparam tone = real'(`CLKF) / 64.0;
    localparam dbfs = 20.0 * $log10(2**15);
    localparam mags = 10**((dbfs+`SIG)/20.0);
    localparam magn = mags / 10**(`SNR/20.0);
@@ -56,12 +56,12 @@ module tb_accumulator;
       randint = $dist_normal(seed, 0, 100 * magn);
       randreal = real'(randint) / 100.0;
       
-      I = mags * $cos(2*`PI*`F*tm) + randreal;
+      I = mags * $cos(2*`PI*tone*tm) + randreal;
 
       randint = $dist_normal(seed, 0, 100 * magn);
       randreal = real'(randint) / 100.0;
       
-      Q = mags * $sin(2*`PI*`F*tm) + randreal;
+      Q = mags * $sin(2*`PI*tone*tm) + randreal;
 
       dataI = $rtoi(I);
       dataQ = $rtoi(Q);
@@ -110,8 +110,7 @@ module tb_accumulator;
 	 
       end
 
-      $sformat(fname, "int.dat", i);
-      fid = $fopen(fname, "w");
+      fid = $fopen("int.dat", "w");
 	 
       do_trig(1);
       #(dlys);
