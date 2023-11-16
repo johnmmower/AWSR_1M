@@ -9,6 +9,7 @@
 `define SNR  -10.0
 
 `define DEPTH 4096
+`define SAMPS 2048
 `define COUNT 16
 
 module tb_accumulator;
@@ -35,7 +36,8 @@ module tb_accumulator;
    localparam magn = mags / 10**(`SNR/20.0);
    localparam dlys = 2.0 * real'(`DEPTH) / real'(`CLKF) / 1e-9;
    localparam [15:0] shift = $clog2(`COUNT);
-
+   localparam [15:0] samps = `SAMPS;
+      
    wire signed [15:0] usedI = uut.acc_mem_inst_I.mon_data;
    wire signed [15:0] usedQ = uut.acc_mem_inst_Q.mon_data;
    wire        used_vld = uut.acc_mem_inst_I.mon_vld;
@@ -138,6 +140,7 @@ module tb_accumulator;
       .trig(trig),
       .trig_int(trig_int),
       .shift(shift),
+      .samps(samps),
       .din_I(dataI),
       .din_Q(dataQ),
       .dout_I(accI),

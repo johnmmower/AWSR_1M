@@ -36,13 +36,14 @@ module acc_mem #(parameter DEPTH=1024)
     input 	  rst,
     input 	  trig,
     input 	  trig_int,
+    input [15:0]  sampsm1,
     input [15:0]  din,
     output [31:0] dout,
     output 	  vld 
     );
    
    localparam BITS = $clog2(DEPTH);
-   
+
    reg init;
    reg wen = 0;  // no reset
    reg vldl = 0; // no reset
@@ -53,7 +54,7 @@ module acc_mem #(parameter DEPTH=1024)
       
    reg [BITS-1:0] waddr;
    reg [BITS-1:0] raddr;
-   
+         
    wire [31:0] 	   rdata;
 
    reg signed [31:0] wdata;
@@ -94,7 +95,7 @@ module acc_mem #(parameter DEPTH=1024)
 
       if (trig && trig_int && ~rst_cght)
 	vldl <= 1;
-      else if (raddr == (DEPTH-1))
+      else if ((raddr == (DEPTH-1)) || (raddr == sampsm1))
 	vldl <= 0;
             
       // at trig event, read out memory
@@ -106,7 +107,7 @@ module acc_mem #(parameter DEPTH=1024)
       // write logic     
       if (trig_t4)
         wen <= 1;
-      else if (waddr == (DEPTH-1))
+      else if ((waddr == (DEPTH-1)) || (waddr == sampsm1))
 	wen <= 0;
             
       // delay write
@@ -207,7 +208,8 @@ module accumulator #(parameter DEPTH=1024)
    input 	     trig,
    input 	     trig_int,
 
-   input [15:0]      shift, // one-hot or zero @trig_int 
+   input [15:0]      shift, // one-hot or zero @trig_int
+   input [15:0]      samps, // depth @trig_int
    
    input [15:0]      din_I,
    input [15:0]      din_Q,
@@ -237,10 +239,13 @@ module accumulator #(parameter DEPTH=1024)
 
    // snag parameter
    reg [15:0] shift_l;
-
-   always @(posedge clk)
-     if (trig_int)
-       shift_l <= shift;
+   reg [15:0] samps_m1_l;
+   
+   always @(posedge clk) 
+     if (trig_int) begin
+	shift_l <= shift;
+	samps_m1_l <= samps - 'b1;
+     end
 
    // accumulate
    wire [31:0] acc_I;
@@ -254,6 +259,7 @@ module accumulator #(parameter DEPTH=1024)
       .rst     (rst       ),
       .trig    (trig_s    ),
       .trig_int(trig_int_s),
+      .sampsm1 (samps_m1_l),
       .din     (din_I     ),
       .dout    (acc_I     ),
       .vld     (acc_vld   )
@@ -266,6 +272,7 @@ module accumulator #(parameter DEPTH=1024)
       .rst     (rst       ),
       .trig    (trig_s    ),
       .trig_int(trig_int_s),
+      .sampsm1 (samps_m1_l),
       .din     (din_Q     ),
       .dout    (acc_Q     ),
       .vld     (          )
