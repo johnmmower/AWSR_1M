@@ -32,14 +32,16 @@ endmodule
    
 module acc_mem #(parameter DEPTH=1024)
    (
-    input 	  clk,
-    input 	  rst,
-    input 	  trig,
-    input 	  trig_int,
-    input [15:0]  sampsm1,
-    input [15:0]  din,
-    output [31:0] dout,
-    output 	  vld 
+    input 	      clk,
+    input 	      rst,
+    input 	      trig,
+    input 	      trig_int,
+    input [15:0]      sampsm1,
+    input [15:0]      din,
+    output [31:0]     dout,
+    output 	      vld,
+    output reg [15:0] mon_data,
+    output reg 	      mon_vld
     );
    
    localparam BITS = $clog2(DEPTH);
@@ -64,8 +66,8 @@ module acc_mem #(parameter DEPTH=1024)
    // for sim monitor
    reg [15:0] 	     din_t1;
    reg [15:0] 	     din_t2;
-   reg [15:0] 	     mon_data;
-   reg 		     mon_vld;
+   //reg [15:0] 	     mon_data;
+   //reg 		     mon_vld;
       
    assign dout = rdata;
    assign vld = vldl_t2; 
@@ -216,7 +218,10 @@ module accumulator #(parameter DEPTH=1024)
 
    output reg [15:0] dout_I,
    output reg [15:0] dout_Q,
-   output reg 	     dout_vld
+   output reg 	     dout_vld,
+   output [15:0]     mon_I, // no accum w/delay
+   output [15:0]     mon_Q,
+   output 	     mon_vld
  );
 
    // ensure one-shot trigger
@@ -262,7 +267,9 @@ module accumulator #(parameter DEPTH=1024)
       .sampsm1 (samps_m1_l),
       .din     (din_I     ),
       .dout    (acc_I     ),
-      .vld     (acc_vld   )
+      .vld     (acc_vld   ),
+      .mon_data(mon_I     ),
+      .mon_vld (mon_vld   )
       );
    
    acc_mem #(.DEPTH(DEPTH))
@@ -275,7 +282,9 @@ module accumulator #(parameter DEPTH=1024)
       .sampsm1 (samps_m1_l),
       .din     (din_Q     ),
       .dout    (acc_Q     ),
-      .vld     (          )
+      .vld     (          ),
+      .mon_data(mon_Q     ),
+      .mon_vld (          )
       );
 
    // shift

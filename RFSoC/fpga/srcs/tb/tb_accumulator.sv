@@ -38,9 +38,9 @@ module tb_accumulator;
    localparam [15:0] shift = $clog2(`COUNT);
    localparam [15:0] samps = `SAMPS;
       
-   wire signed [15:0] usedI = uut.acc_mem_inst_I.mon_data;
-   wire signed [15:0] usedQ = uut.acc_mem_inst_Q.mon_data;
-   wire        used_vld = uut.acc_mem_inst_I.mon_vld;
+   wire signed [15:0] usedI;
+   wire signed [15:0] usedQ;
+   wire 	      used_vld;
 
    integer     i;
 
@@ -145,7 +145,10 @@ module tb_accumulator;
       .din_Q(dataQ),
       .dout_I(accI),
       .dout_Q(accQ),
-      .dout_vld(acc_vld)
+      .dout_vld(acc_vld),
+      .mon_I(usedI),
+      .mon_Q(usedQ),
+      .mon_vld(used_vld)
       );
 
 endmodule
