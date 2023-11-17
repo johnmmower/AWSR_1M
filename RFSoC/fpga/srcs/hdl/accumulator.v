@@ -1,5 +1,5 @@
 
-module acc_ram #(parameter ABITS=8, parameter DBITS=32)
+module acc_ram #(parameter ABITS=8, parameter DBITS=32, parameter SIM=0)
    (
     input 		   clk,
     input [ABITS-1:0] 	   waddr,
@@ -12,13 +12,16 @@ module acc_ram #(parameter ABITS=8, parameter DBITS=32)
    reg [DBITS-1:0] mem [(2**ABITS)-1:0];
    reg [DBITS-1:0] stage;
 
-   // sim init, impl dnc
-   integer i;
-   initial begin
-      for (i=0; i<(2**ABITS); i=i+1) 
-	mem[i] = 0;//i;
-   end
-
+   generate
+      if (SIM != 0) begin
+	 integer i;
+	 initial begin
+	    for (i=0; i<(2**ABITS); i=i+1) 
+	      mem[i] = 0;
+	 end
+      end
+   endgenerate
+   
    always @(posedge clk) begin
       stage <= mem[raddr];
       rdata <= stage;
@@ -30,7 +33,7 @@ module acc_ram #(parameter ABITS=8, parameter DBITS=32)
 endmodule
 
    
-module acc_mem #(parameter DEPTH=1024)
+module acc_mem #(parameter DEPTH=1024, parameter SIM=0)
    (
     input 	      clk,
     input 	      rst,
@@ -136,7 +139,7 @@ module acc_mem #(parameter DEPTH=1024)
             
    end
 
-   acc_ram #(.ABITS(BITS))
+   acc_ram #(.ABITS(BITS), .SIM(SIM))
    acc_ram_inst
      (
       .clk  (clk  ),
@@ -149,7 +152,7 @@ module acc_mem #(parameter DEPTH=1024)
           
 endmodule
 
-
+// has bias in round
 module acc_mux
   (
    input 	     clk,
@@ -202,7 +205,7 @@ module acc_mux
 endmodule
    
    
-module accumulator #(parameter DEPTH=1024)
+module accumulator #(parameter DEPTH=1024, parameter SIM=0)
   (
    input 	     clk,
    input 	     rst,
@@ -257,7 +260,7 @@ module accumulator #(parameter DEPTH=1024)
    wire [31:0] acc_Q;
    wire        acc_vld;
       
-   acc_mem #(.DEPTH(DEPTH))
+   acc_mem #(.DEPTH(DEPTH), .SIM(SIM))
    acc_mem_inst_I
      (
       .clk     (clk       ),
@@ -272,7 +275,7 @@ module accumulator #(parameter DEPTH=1024)
       .mon_vld (mon_vld   )
       );
    
-   acc_mem #(.DEPTH(DEPTH))
+   acc_mem #(.DEPTH(DEPTH), .SIM(SIM))
    acc_mem_inst_Q
      (
       .clk     (clk       ),

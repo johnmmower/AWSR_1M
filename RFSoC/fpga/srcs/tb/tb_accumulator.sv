@@ -133,7 +133,7 @@ module tb_accumulator;
 	  $fwrite(fid, "%d, %d\n", accI, accQ);
      end
 
-   accumulator #(.DEPTH(`DEPTH)) uut
+   accumulator #(.DEPTH(`DEPTH), .SIM(1)) uut
      (
       .clk(clk),
       .rst(rst),
