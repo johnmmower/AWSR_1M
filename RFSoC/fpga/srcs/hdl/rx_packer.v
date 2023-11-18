@@ -13,11 +13,10 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
    input [31:0] tic,      // free run tic
    input [1:0]  ant,      // current antenna
 
-   // p vals are assumed static at run rising edge
+   // p vals are assumed static for triggering period
    input [15:0] pcfg,     // data tag
    input [15:0] psamps,   // number of samples, always psamps & 0xFFFC
    input [15:0] pshift,   // number of bits to trim
-   input        pnoint,   // no integration (trig_int always == trig)
    
    input [15:0] rx_I,
    input [15:0] rx_Q,
@@ -30,14 +29,10 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
    wire rst = ~run;
 
    wire accum_vld;
-   wire mon_vld;
-   reg 	accum_vld_t1;
-   reg 	mon_vld_t1;
+   wire accum_vld_m1;
    
    wire [15:0] accum_I;
    wire [15:0] accum_Q;
-   wire [15:0] mon_I;
-   wire [15:0] mon_Q;
 
    reg [127:0] bufdat;
    reg [3:0]   bufvld;
@@ -47,27 +42,21 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
 
    always @(posedge clk) begin
 
-      accum_vld_t1 <= accum_vld;
-      mon_vld_t1 <= mon_vld;
+      bufdat <= {bufdat[95:0], accum_Q, accum_I};
 
-      if (pnoint)
-	bufdat <= {bufdat[95:0], mon_Q, mon_I};
-      else
-	bufdat <= {bufdat[95:0], accum_Q, accum_I};
-
-      if ((pnoint && mon_vld) || (~pnoint && accum_vld))
+      if (accum_vld)
 	if (&bufvld)
 	  bufvld <= 4'b0001;
 	else
-	  bufvld <= {bufvld[2:0], pnoint ? mon_vld : accum_vld};
+	  bufvld <= {bufvld[2:0], 1'b1};
       else
 	bufvld <= 0;
-      
-      if (pnoint)
-	buflst <= {buflst[2:0], ~mon_vld && mon_vld_t1};
+
+      if (accum_vld && ~accum_vld_m1)      
+	buflst <= {buflst[2:0], 1'b1};
       else
-	buflst <= {buflst[2:0], ~accum_vld && accum_vld_t1};
-            
+	buflst <= buflst << 1;
+                
       if (trig && trig_int)
 	tdata <= {`SYNC, pcfg,
                   sec,
@@ -85,20 +74,21 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
    accumulator #(.DEPTH(DEPTH), .SIM(SIM))
    accumulator_inst
      (
-      .clk     (clk      ),
-      .rst     (rst      ),
-      .trig    (trig     ),
-      .trig_int(trig_int ),
-      .shift   (pshift   ),
-      .samps   (samps    ),
-      .din_I   (rx_I     ),
-      .din_Q   (rx_Q     ),
-      .dout_I  (accum_I  ),
-      .dout_Q  (accum_Q  ),
-      .dout_vld(accum_vld),
-      .mon_I   (mon_I    ),
-      .mon_Q   (mon_Q    ),
-      .mon_vld (mon_vld  )
+      .clk        (clk         ),
+      .rst        (rst         ),
+      .trig       (trig        ),
+      .trig_int   (trig_int    ),
+      .shift      (pshift      ),
+      .samps      (samps       ),
+      .din_I      (rx_I        ),
+      .din_Q      (rx_Q        ),
+      .dout_I     (accum_I     ),
+      .dout_Q     (accum_Q     ),
+      .dout_vld   (accum_vld   ),
+      .dout_vld_m1(accum_vld_m1),
+      .mon_I      (            ),
+      .mon_Q      (            ),
+      .mon_vld    (            )
       );
       
 endmodule

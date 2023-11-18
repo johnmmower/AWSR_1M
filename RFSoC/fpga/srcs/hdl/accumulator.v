@@ -222,6 +222,7 @@ module accumulator #(parameter DEPTH=1024, parameter SIM=0)
    output reg [15:0] dout_I,
    output reg [15:0] dout_Q,
    output reg 	     dout_vld,
+   output            dout_vld_m1,
    output [15:0]     mon_I, // no accum w/delay
    output [15:0]     mon_Q,
    output 	     mon_vld
@@ -315,6 +316,8 @@ module accumulator #(parameter DEPTH=1024, parameter SIM=0)
       .vld_out(        )
       );
 
+   assign dout_vld_m1 = shft_vld;
+      
    // register outputs
    always @(posedge clk) begin
       dout_I <= shft_I;
