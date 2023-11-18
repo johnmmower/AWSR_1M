@@ -6,7 +6,7 @@ import mmap
 RMBASE = 0xA0040000
 RMSIZE = 0x10000
 
-MAXLEN = 16384
+MAXLEN = 8192
 
 T = 16*650e-9     # pulse leng
 FS = 215.04e6  # sample pd.
