@@ -34,6 +34,8 @@ module tb_rx_packer;
    wire [127:0] tdata;
    wire 	tvalid;
    wire 	tlast;
+   reg 		tready = 1;
+   wire 	error;
    
    localparam tone = real'(`CLKF) / 64.0;
    localparam dbfs = 20.0 * $log10(2**15);
@@ -132,8 +134,10 @@ module tb_rx_packer;
       .rx_I(dataI),
       .rx_Q(dataQ),
       .tdata(tdata),
+      .tready(tready),
       .tvalid(tvalid),
-      .tlast(tlast)
+      .tlast(tlast),
+      .error(error)
       );
          
 endmodule

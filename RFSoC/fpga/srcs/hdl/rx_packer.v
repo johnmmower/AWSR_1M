@@ -3,27 +3,30 @@
 
 module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
   (
-   input 	clk,
+   input 	      clk,
 
-   input 	run,      // state reset at rising edge
-   input 	trig_int, // rx int trig one-shot
-   input        trig,     // rx trig one-shot
+   input 	      run,      // state reset at rising edge
+   input 	      trig_int, // rx int trig one-shot
+   input              trig,     // rx trig one-shot
 
-   input [31:0] sec,      // epoch
-   input [31:0] tic,      // free run tic
-   input [1:0]  ant,      // current antenna
+   input [31:0]       sec,      // epoch
+   input [31:0]       tic,      // free run tic
+   input [1:0]        ant,      // current antenna
 
    // p vals are assumed static for triggering period
-   input [15:0] pcfg,     // data tag
-   input [15:0] psamps,   // number of samples, always psamps & 0xFFFC
-   input [15:0] pshift,   // number of bits to trim
+   input [15:0]       pcfg,     // data tag
+   input [15:0]       psamps,   // number of samples, always psamps & 0xFFFC
+   input [15:0]       pshift,   // number of bits to trim
    
-   input [15:0] rx_I,
-   input [15:0] rx_Q,
+   input [15:0]       rx_I,
+   input [15:0]       rx_Q,
 
    output reg [127:0] tdata,
+   input              tready,
    output reg         tvalid,
-   output reg         tlast
+   output reg         tlast,
+   
+   output reg         error
    );
 
    wire rst = ~run;
@@ -68,7 +71,13 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
       tvalid <= (trig && trig_int) || &bufvld;
       
       tlast <= |buflst;
-      
+
+      if (rst)
+	error <= 0;
+      else
+	if (tvalid && ~tready)
+	  error <= 1;
+            
    end
    
    accumulator #(.DEPTH(DEPTH), .SIM(SIM))
