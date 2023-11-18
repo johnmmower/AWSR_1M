@@ -15,6 +15,13 @@ module rotator_encoder #(parameter CLKF = 215040000)
    reg [7:0]  rx_cksum;
    reg [2:0]  rx_cnt;
 
+   localparam SM_BITS = 16;
+   reg [SM_BITS-1:0] rxsm_buf;
+   wire rxsm = |rxsm_buf;
+
+   always @(posedge clk)
+     rxsm_buf <= {rxsm_buf[SM_BITS-2:0], rx};
+   
    always @(posedge clk) 
      if (srst)
        azimuth_vld <= 0;
@@ -62,7 +69,7 @@ module rotator_encoder #(parameter CLKF = 215040000)
      (
       .clk            (clk    ),
       .rst            (srst   ),
-      .rx             (rx     ),
+      .rx             (rxsm   ),
       .tx             (       ),
       .transmit       (1'b0   ),
       .tx_byte        (8'b0   ),
