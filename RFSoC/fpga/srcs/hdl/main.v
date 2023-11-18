@@ -54,7 +54,7 @@ module main
    wire [31:0] 	 a_nextsec;
 
    // tmp
-   reg [13:0] dac_0_addr;
+   reg [12:0] dac_0_addr;
    always @(posedge ref_clk)
        dac_0_addr <= dac_0_addr + 'b1;
    // END: tmp
@@ -165,9 +165,12 @@ module main
       .user_sysref_adc (sys_clk_s       ),
       .ref_clk         (ref_clk         ),
       .ref_rstn        (1'b1),
-      .RX_0_tdata      (32'd0),
+      .RX_0_tdata      (128'd0),
       .RX_0_tvalid     (1'b0),
       .RX_0_tready     (),
+      .RX_1_tdata      (128'd0),
+      .RX_1_tvalid     (1'b0),
+      .RX_1_tready     (),
    
       .clk_adc0_13M44  (adc0_clk        ),
       .clk_dac0_13M44  (dac0_clk        ),
