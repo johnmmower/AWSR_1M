@@ -9,15 +9,16 @@
 `define SNR  -10.0
 
 `define DEPTH 4096
-`define SAMPS 2048
-`define COUNT 16
+`define SAMPS 10
+`define COUNT 1
 
 module tb_accumulator;
 
    reg clk = 0;
    reg rst = 0;
    reg trig=0;
-   reg trig_int=0;
+   reg trig_strt=0;
+   reg trig_last=0;
    reg signed [15:0] dataI;
    reg signed [15:0] dataQ;
    wire signed [15:0] accI;
@@ -36,17 +37,10 @@ module tb_accumulator;
    localparam magn = mags / 10**(`SNR/20.0);
    localparam dlys = 2.0 * real'(`DEPTH) / real'(`CLKF) / 1e-9;
    localparam [15:0] shift = $clog2(`COUNT);
-   localparam [15:0] samps = `SAMPS;
+   localparam [15:0] sampsm1 = `SAMPS - 1;
       
-   wire signed [15:0] usedI;
-   wire signed [15:0] usedQ;
-   wire 	      used_vld;
-
    integer     i;
 
-   integer     fid;
-   string      fname;
-   
    always @(posedge clk)
       if (trig)
 	tm <= 0;
@@ -77,78 +71,64 @@ module tb_accumulator;
       rst = 0;
    endtask
 
-   task do_trig(input i);
+   task do_trig(input [1:0] i);
       wait(clk == 0);
       trig = 1;
-      if (i)
-	trig_int = 1;
+      if (i[0])
+	trig_strt = 1;
+      if (i[1])
+	trig_last = 1;
       wait(clk == 1);
       wait(clk == 0);
       trig = 0;
-      trig_int = 0;
+      trig_strt = 0;
+      trig_last = 0;
    endtask      
    
    initial forever #(1.0/`CLKF/2.0/1e-9) clk = ~clk;
 
    initial begin
       trig = 0;
-      trig_int = 0;
+      trig_strt = 0;
+      trig_last = 0;
       #100;
       do_reset;
       #100;
 
       for (i=0; i<`COUNT; i=i+1) begin
 	 
-	 $sformat(fname, "raw_%02d.dat", i);
-	 fid = $fopen(fname, "w");
-	 
 	 if (i==0)
-	   do_trig(1);
+	   if (`COUNT <= 1)
+	     do_trig(2'b11);
+	   else
+	     do_trig(2'b01);
+	 else if (i==(`COUNT-2))
+	   do_trig(2'b10);
 	 else
-	   do_trig(0);
+	   do_trig(2'b00);
+	 
 	 #(dlys);
 
-	 $fclose(fid);
-	 
       end
 
-      fid = $fopen("int.dat", "w");
-	 
-      do_trig(1);
-      #(dlys);
-
-      $fclose(fid);
-            
       $finish;
 
    end 
-
-   always @(posedge clk)
-     if (i < `COUNT) begin
-	if (used_vld)
-	  $fwrite(fid, "%d, %d\n", usedI, usedQ);
-     end
-     else if (i == `COUNT) begin
-	if (acc_vld)
-	  $fwrite(fid, "%d, %d\n", accI, accQ);
-     end
 
    accumulator #(.DEPTH(`DEPTH), .SIM(1)) uut
      (
       .clk(clk),
       .rst(rst),
       .trig(trig),
-      .trig_int(trig_int),
+      .trig_strt(trig_strt),
+      .trig_last(trig_last),
       .shift(shift),
-      .samps(samps),
+      .sampsm1(sampsm1),
       .din_I(dataI),
       .din_Q(dataQ),
       .dout_I(accI),
       .dout_Q(accQ),
-      .dout_vld(acc_vld),
-      .mon_I(usedI),
-      .mon_Q(usedQ),
-      .mon_vld(used_vld)
+      .dout_vld(acc_vld)
       );
 
 endmodule
