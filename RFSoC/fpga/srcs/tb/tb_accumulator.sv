@@ -9,8 +9,8 @@
 `define SNR  -10.0
 
 `define DEPTH 4096
-`define SAMPS 10
-`define COUNT 1
+`define SAMPS 2048
+`define COUNT 16
 
 module tb_accumulator;
 
@@ -102,7 +102,7 @@ module tb_accumulator;
 	     do_trig(2'b11);
 	   else
 	     do_trig(2'b01);
-	 else if (i==(`COUNT-2))
+	 else if (i==(`COUNT-1))
 	   do_trig(2'b10);
 	 else
 	   do_trig(2'b00);
@@ -110,7 +110,23 @@ module tb_accumulator;
 	 #(dlys);
 
       end
+      /*
+      for (i=0; i<`COUNT; i=i+1) begin
+	 
+	 if (i==0)
+	   if (`COUNT <= 1)
+	     do_trig(2'b11);
+	   else
+	     do_trig(2'b01);
+	 else if (i==(`COUNT-1))
+	   do_trig(2'b10);
+	 else
+	   do_trig(2'b00);
+	 
+	 #(dlys);
 
+      end
+      */
       $finish;
 
    end 

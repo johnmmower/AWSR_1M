@@ -176,7 +176,7 @@ module acc_mem #(parameter DEPTH=1024, parameter SIM=0)
 	vld <= 0;
 
       if ((waddr == (DEPTH-1)) || (waddr == sampsm1))      
-	lst <= 1;
+	lst <= wen;
       else
 	lst <= 0;
       
