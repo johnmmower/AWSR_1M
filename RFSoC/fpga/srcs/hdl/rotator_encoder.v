@@ -6,8 +6,7 @@ module rotator_encoder #(parameter CLKF = 215040000)
    input 	     clk,
    input 	     srst,
    input 	     rx,
-   output reg [15:0] azimuth,
-   output reg 	     azimuth_vld
+   output reg [15:0] azimuth
    );
 
    wire       rx_new;
@@ -15,16 +14,23 @@ module rotator_encoder #(parameter CLKF = 215040000)
    reg [7:0]  rx_cksum;
    reg [2:0]  rx_cnt;
 
+   reg [15:0] azi;
+   reg 	      azivld;
+      
    localparam SM_BITS = 16;
    reg [SM_BITS-1:0] rxsm_buf;
    wire rxsm = |rxsm_buf;
 
    always @(posedge clk)
+     if (azivld)
+       azimuth <= azi;
+      
+   always @(posedge clk)
      rxsm_buf <= {rxsm_buf[SM_BITS-2:0], rx};
    
    always @(posedge clk) 
      if (srst)
-       azimuth_vld <= 0;
+       azivld <= 0;
      else 
        if (rx_new) begin
 	  if (rx_byte == 8'h80) begin
@@ -33,17 +39,17 @@ module rotator_encoder #(parameter CLKF = 215040000)
 	  end
 	  else if (rx_cnt == 1) begin
 	     rx_cksum <= rx_cksum + rx_byte;
-	     azimuth[1:0] <= rx_byte[3:2];
+	     azi[1:0] <= rx_byte[3:2];
 	     rx_cnt <= 2;
 	  end
 	  else if (rx_cnt == 2) begin
 	     rx_cksum <= rx_cksum + rx_byte;
-	     azimuth[15:9] <= rx_byte[6:0];
+	     azi[15:9] <= rx_byte[6:0];
 	     rx_cnt <= 3;
 	  end
 	  else if (rx_cnt == 3) begin
 	     rx_cksum <= rx_cksum + rx_byte;
-	     azimuth[8:2] <= rx_byte[6:0];
+	     azi[8:2] <= rx_byte[6:0];
 	     rx_cnt <= 4;
 	  end
 	  else if (rx_cnt == 4) begin
@@ -56,12 +62,12 @@ module rotator_encoder #(parameter CLKF = 215040000)
 	  end
 	  else if (rx_cnt == 6) begin
 	     if (rx_cksum[6:0] == rx_byte[6:0])
-	       azimuth_vld <= 1;
+	       azivld <= 1;
 	     rx_cnt <= 7;
 	  end
        end
        else
-	 azimuth_vld <= 0;
+	 azivld <= 0;
    
    uart 
      #(.CLOCK_DIVIDE(CLKF/`BAUD/4))

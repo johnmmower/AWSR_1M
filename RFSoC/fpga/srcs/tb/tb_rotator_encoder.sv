@@ -15,7 +15,6 @@ module tb_rotator_encoder;
    reg rx = 1;
 
    wire [15:0] azimuth;
-   wire        azimuth_vld;
       
    task do_reset;
       wait(clk == 1);
@@ -75,8 +74,7 @@ module tb_rotator_encoder;
       .clk        (clk        ),
       .srst       (rst        ),
       .rx         (rx         ),
-      .azimuth    (azimuth    ),
-      .azimuth_vld(azimuth_vld)
+      .azimuth    (azimuth    )
       );
    
 endmodule

@@ -132,8 +132,7 @@ module main
       .clk        (ref_clk),
       .srst       (ref_rst),
       .rx         (1'b0   ), //////////// connect
-      .azimuth    (),
-      .azimuth_vld()
+      .azimuth    ()
       );
          
    design_main design_main_inst
