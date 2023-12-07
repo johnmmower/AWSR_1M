@@ -278,8 +278,10 @@ proc create_root_design { parentCell } {
 
 
   # Create ports
-  set adc_0 [ create_bd_port -dir O -from 31 -to 0 adc_0 ]
-  set adc_1 [ create_bd_port -dir O -from 31 -to 0 adc_1 ]
+  set adc0_I [ create_bd_port -dir O -from 15 -to 0 adc0_I ]
+  set adc0_Q [ create_bd_port -dir O -from 15 -to 0 adc0_Q ]
+  set adc1_I [ create_bd_port -dir O -from 15 -to 0 adc1_I ]
+  set adc1_Q [ create_bd_port -dir O -from 15 -to 0 adc1_Q ]
   set clk_adc0_13M44 [ create_bd_port -dir O -type clk clk_adc0_13M44 ]
   set clk_dac0_13M44 [ create_bd_port -dir O -type clk clk_dac0_13M44 ]
   set_property -dict [ list \
@@ -524,20 +526,6 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.NUM_PORTS {3} \
  ] $xlconcat_0
-
-  # Create instance: xlconcat_1, and set properties
-  set xlconcat_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_1 ]
-  set_property -dict [ list \
-   CONFIG.IN0_WIDTH {16} \
-   CONFIG.IN1_WIDTH {16} \
- ] $xlconcat_1
-
-  # Create instance: xlconcat_2, and set properties
-  set xlconcat_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_2 ]
-  set_property -dict [ list \
-   CONFIG.IN0_WIDTH {16} \
-   CONFIG.IN1_WIDTH {16} \
- ] $xlconcat_2
 
   # Create instance: xlslice_0, and set properties
   set xlslice_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_0 ]
@@ -1281,18 +1269,12 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net usp_rf_data_converter_0_clk_dac0 [get_bd_ports clk_dac0_13M44] [get_bd_pins usp_rf_data_converter_0/clk_dac0]
   connect_bd_net -net usp_rf_data_converter_0_clk_dac1 [get_bd_ports clk_dac1_13M44] [get_bd_pins usp_rf_data_converter_0/clk_dac1]
   connect_bd_net -net usp_rf_data_converter_0_irq [get_bd_pins usp_rf_data_converter_0/irq] [get_bd_pins xlconcat_0/In0]
-  connect_bd_net -net usp_rf_data_converter_0_m00_axis_tdata [get_bd_pins usp_rf_data_converter_0/m00_axis_tdata] [get_bd_pins xlconcat_1/In0]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets usp_rf_data_converter_0_m00_axis_tdata]
-  connect_bd_net -net usp_rf_data_converter_0_m01_axis_tdata [get_bd_pins usp_rf_data_converter_0/m01_axis_tdata] [get_bd_pins xlconcat_1/In1]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets usp_rf_data_converter_0_m01_axis_tdata]
-  connect_bd_net -net usp_rf_data_converter_0_m02_axis_tdata [get_bd_pins usp_rf_data_converter_0/m02_axis_tdata] [get_bd_pins xlconcat_2/In0]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets usp_rf_data_converter_0_m02_axis_tdata]
-  connect_bd_net -net usp_rf_data_converter_0_m03_axis_tdata [get_bd_pins usp_rf_data_converter_0/m03_axis_tdata] [get_bd_pins xlconcat_2/In1]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets usp_rf_data_converter_0_m03_axis_tdata]
+  connect_bd_net -net usp_rf_data_converter_0_m00_axis_tdata [get_bd_ports adc0_I] [get_bd_pins usp_rf_data_converter_0/m00_axis_tdata]
+  connect_bd_net -net usp_rf_data_converter_0_m01_axis_tdata [get_bd_ports adc0_Q] [get_bd_pins usp_rf_data_converter_0/m01_axis_tdata]
+  connect_bd_net -net usp_rf_data_converter_0_m02_axis_tdata [get_bd_ports adc1_I] [get_bd_pins usp_rf_data_converter_0/m02_axis_tdata]
+  connect_bd_net -net usp_rf_data_converter_0_m03_axis_tdata [get_bd_ports adc1_Q] [get_bd_pins usp_rf_data_converter_0/m03_axis_tdata]
   connect_bd_net -net util_vector_logic_0_Res [get_bd_pins blk_mem_gen_0/rstb] [get_bd_pins util_vector_logic_0/Res]
   connect_bd_net -net xlconcat_0_dout [get_bd_pins xlconcat_0/dout] [get_bd_pins zynq_ultra_ps_e_0/pl_ps_irq0]
-  connect_bd_net -net xlconcat_1_dout [get_bd_ports adc_0] [get_bd_pins xlconcat_1/dout]
-  connect_bd_net -net xlconcat_2_dout [get_bd_ports adc_1] [get_bd_pins xlconcat_2/dout]
   connect_bd_net -net xlslice_0_Dout [get_bd_pins blk_mem_gen_0/addra] [get_bd_pins xlslice_0/Dout]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_clk0 [get_bd_ports reg_clk] [get_bd_pins axi32reg_0/S_AXI_ACLK] [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] [get_bd_pins axi_dma_0/s_axi_lite_aclk] [get_bd_pins axi_dma_1/s_axi_lite_aclk] [get_bd_pins ps8_0_axi_periph/ACLK] [get_bd_pins ps8_0_axi_periph/M00_ACLK] [get_bd_pins ps8_0_axi_periph/M01_ACLK] [get_bd_pins ps8_0_axi_periph/M02_ACLK] [get_bd_pins ps8_0_axi_periph/M03_ACLK] [get_bd_pins ps8_0_axi_periph/M04_ACLK] [get_bd_pins ps8_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps8_0_24M/slowest_sync_clk] [get_bd_pins usp_rf_data_converter_0/s_axi_aclk] [get_bd_pins zynq_ultra_ps_e_0/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e_0/pl_clk0]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_clk1 [get_bd_pins axi_dma_0/m_axi_s2mm_aclk] [get_bd_pins axi_dma_1/m_axi_s2mm_aclk] [get_bd_pins axis_data_fifo_0/m_axis_aclk] [get_bd_pins axis_data_fifo_1/m_axis_aclk] [get_bd_pins rst_ps8_0_249M/slowest_sync_clk] [get_bd_pins smartconnect_0/aclk] [get_bd_pins smartconnect_1/aclk] [get_bd_pins zynq_ultra_ps_e_0/pl_clk1] [get_bd_pins zynq_ultra_ps_e_0/saxihp0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e_0/saxihp1_fpd_aclk]

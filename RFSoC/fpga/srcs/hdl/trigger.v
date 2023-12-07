@@ -2,12 +2,11 @@
 module trigger
   (
    input 	    clk,
-
+   input 	    rst,            // run is opposite
+   
    input [15:0]     azimuth,        // current antenna position
    
    // a* vals latched at rst falling edge
-   input 	    arst,           // run is opposite
-
    input            aruntx,         // run transmitter
    input [31:0]     aprfcntm1,      // prf dwell counter
    input [15:0]     aintcntm1,      // integration counter
@@ -25,8 +24,6 @@ module trigger
    output reg       rx_trig_last    // one-shot rx stop 
    );
 
-   wire rst;
-   
    wire run = ~rst;
    reg 	run_t1, run_t2;
    reg 	runtx;
@@ -187,13 +184,5 @@ module trigger
       
    end
       
-   async_debounce rstin
-     (
-      .clk    (clk ),
-      .adin   (arst),
-      .dout   (rst ),
-      .oneshot(    )
-      );
-   
 endmodule
 

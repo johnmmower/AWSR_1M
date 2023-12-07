@@ -37,7 +37,7 @@ module main
    assign status[7:4] = 0;
       
    wire   ref_clk;
-   wire   ref_rst; /////////////////////////
+   wire   ref_rst; 
    wire   sys_clk;
    reg 	  sys_clk_s;
 
@@ -52,16 +52,96 @@ module main
    wire [1023:0] a_reg_from_ps;
    wire [1023:0] a_reg_to_ps;
    wire [31:0] 	 a_nextsec;
+   wire 	 arst;
+   wire 	 aruntx;
+   wire 	 arunrx_ch0;
+   wire 	 arunrx_ch1;
+   wire [31:0] 	 atxdelaym1;
+   wire [31:0] 	 atxonm;
+   wire [31:0] 	 aprfcntm1;
+   wire [15:0] 	 aintcntm1;
+   wire [15:0] 	 alowazi;
+   wire [15:0] 	 ahghazi;
+   wire [7:0] 	 aantseq;
+   wire [15:0] 	 acfg;
+   wire [15:0] 	 asamps_ch0;
+   wire [15:0] 	 asampsm1_ch0;
+   wire [15:0] 	 ashift_ch0;
+   wire [31:0] 	 adelaym1_ch0;
+   wire [15:0] 	 asamps_ch1;
+   wire [15:0] 	 asampsm1_ch1;
+   wire [15:0] 	 ashift_ch1;
+   wire [31:0] 	 adelaym1_ch1;
 
-   // tmp
-   reg [12:0] dac_0_addr;
-   always @(posedge ref_clk)
-       dac_0_addr <= dac_0_addr + 'b1;
-   // END: tmp
+   wire [31:0] 	 tic;
+   wire [31:0] 	 sec;
+   wire [15:0] 	 azimuth;
+   wire [15:0] 	 adc0_I;
+   wire [15:0] 	 adc0_Q;
+   wire [15:0] 	 adc1_I;
+   wire [15:0] 	 adc1_Q;
+
+   wire [127:0]  tdata_ch0;
+   wire 	 tready_ch0;
+   wire 	 tvalid_ch0;
+   wire 	 tlast_ch0;
    
+   wire [127:0]  tdata_ch1;
+   wire 	 tready_ch1;
+   wire 	 tvalid_ch1;
+   wire 	 tlast_ch1;
+      
    always @(posedge ref_clk)
        sys_clk_s <= sys_clk;
 
+   proc proc_inst
+     (
+      .arst         (arst        ),
+      .aruntx       (aruntx      ),
+      .arunrx_ch0   (arunrx_ch0  ),
+      .arunrx_ch1   (arunrx_ch1  ),
+      .atxdelaym1   (atxdelaym1  ),
+      .atxonm1      (atxonm1     ),
+      .aprfcntm1    (aprfcntm1   ),
+      .aintcntm1    (aintcntm1   ),
+      .alowazi      (alowazi     ),
+      .ahghazi      (ahghazi     ),
+      .aantseq      (aantseq     ),
+      .acfg         (acfg        ),
+      .asamps_ch0   (asamps_ch0  ),
+      .asampsm1_ch0 (asampsm1_ch0),
+      .ashift_ch0   (ashift_ch0  ),
+      .adelaym1_ch0 (adelaym1_ch0),
+      .asamps_ch1   (asamps_ch1  ),
+      .asampsm1_ch1 (asampsm1_ch1),
+      .ashift_ch1   (ashift_ch1  ),
+      .adelaym1_ch1 (adelaym1_ch1),
+      .clk          (ref_clk     ),
+      .rst          (ref_rst     ),
+      .sec          (sec         ),
+      .tic          (tic         ),
+      .azimuth      (azimuth     ),
+      .antenna      (            ),
+      .dac_addr     (dac_0_addr  ),
+      .paen         (            ),
+      .rx_I_ch0     (adc0_I      ),
+      .rx_Q_ch0     (adc0_Q      ),
+      .tdata_ch0    (tdata_ch0   ),
+      .tready_ch0   (tready_ch0  ),
+      .tvalid_ch0   (tvalid_ch0  ),
+      .tlast_ch0    (tlast_ch0   ),
+      .buf_error_ch0(            ),
+      .trg_error_ch0(            ),
+      .rx_I_ch1     (adc1_I      ),
+      .rx_Q_ch1     (adc1_Q      ),
+      .tdata_ch1    (tdata_ch1   ),
+      .tready_ch1   (tready_ch1  ),
+      .tvalid_ch1   (tvalid_ch1  ),
+      .tlast_ch1    (tlast_ch1   ),
+      .buf_error_ch1(            ),
+      .trg_error_ch1(            )
+      );
+/////////////////////////////////////// update control   
    control control_inst
      (
       .reg_clk    (a_reg_clk    ),
@@ -83,8 +163,8 @@ module main
       .clk        (ref_clk    ),
       .a_nextsec  (a_nextsec  ),
       .pps        (pps_os     ),
-      .tic        (),
-      .sec_l      (),
+      .tic        (tic        ),
+      .sec_l      (sec        ),
       .ppstime_l  (),
       .l_valid    ()
    );
@@ -132,7 +212,7 @@ module main
       .clk        (ref_clk),
       .srst       (ref_rst),
       .rx         (1'b0   ), //////////// connect
-      .azimuth    ()
+      .azimuth    (azimuth)
       );
          
    design_main design_main_inst
@@ -159,17 +239,24 @@ module main
       .vout13_v_p      (vout13_v_p      ),
        
       .dac_0_addr      (dac_0_addr      ),   
-      .adc_0           (),
-      .adc_1           (),
+      .adc0_I          (adc0_I          ),
+      .adc0_Q          (adc0_Q          ),  
+      .adc1_I          (adc1_I          ),
+      .adc1_Q          (adc1_Q          ),
+
       .user_sysref_adc (sys_clk_s       ),
       .ref_clk         (ref_clk         ),
-      .ref_rstn        (1'b1),
-      .RX_0_tdata      (128'd0),
-      .RX_0_tvalid     (1'b0),
-      .RX_0_tready     (),
-      .RX_1_tdata      (128'd0),
-      .RX_1_tvalid     (1'b0),
-      .RX_1_tready     (),
+      .ref_rstn        (~ref_rst        ),
+      
+      .RX_0_tdata      (tdata_ch0       ),
+      .RX_0_tready     (tready_ch0      ),
+      .RX_0_tvalid     (tvalid_ch0      ),
+      .RX_0_tlast      (tlast_ch0       ),
+      
+      .RX_1_tdata      (tdata_ch1       ),
+      .RX_1_tready     (tready_ch1      ),
+      .RX_1_tvalid     (tvalid_ch1      ),
+      .RX_1_tlast      (tlast_ch1       ),
    
       .clk_adc0_13M44  (adc0_clk        ),
       .clk_dac0_13M44  (dac0_clk        ),

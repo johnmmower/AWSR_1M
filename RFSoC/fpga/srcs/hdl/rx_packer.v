@@ -1,7 +1,7 @@
 
 `define SYNC 16'hA5A5
 
-module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
+module rx_packer #(parameter DEPTH=1024, parameter SIM=0, parameter ID=0)
   (
    input 	      clk,
 
@@ -53,7 +53,9 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
    reg 	       itrig;
    reg 	       itrig_strt;
    reg 	       itrig_last;
-   
+
+   localparam [7:0] id = ID;
+      
    always @(posedge clk) begin
 
       bufdat <= {bufdat[95:0], accum_Q, accum_I};
@@ -76,7 +78,7 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0)
 	tdata <= {`SYNC, pcfg,
                   sec,
                   tic,
-                  6'b000000, ant, 8'h0, psamps};
+                  6'b000000, ant, id, psamps};
       else 
 	tdata <= bufdat;
 
