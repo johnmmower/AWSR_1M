@@ -46,8 +46,6 @@ module main
    wire   dac0_clk;
    wire   dac1_clk;
 
-   wire   pps_os;
-   
    wire        a_reg_clk;
    wire        a_reg_rstn;
    wire [1023:0] a_reg_from_ps;
@@ -77,28 +75,76 @@ module main
 
    wire [31:0] 	 tic;
    wire [31:0] 	 sec;
-   wire [15:0] 	 azimuth;
-   wire [15:0] 	 adc0_I;
-   wire [15:0] 	 adc0_Q;
-   wire [15:0] 	 adc1_I;
-   wire [15:0] 	 adc1_Q;
 
+`ifdef DBG_CH0
+   (* MARK_DEBUG = "TRUE" *)
+   wire [127:0]  tdata_ch0;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 tready_ch0;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 tvalid_ch0;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 tlast_ch0;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 buf_error_ch0;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 trg_error_ch0;
+   (* MARK_DEBUG = "TRUE" *)
+   wire [15:0] 	 adc0_I;
+   (* MARK_DEBUG = "TRUE" *)
+   wire [15:0] 	 adc0_Q;
+`else
    wire [127:0]  tdata_ch0;
    wire 	 tready_ch0;
    wire 	 tvalid_ch0;
    wire 	 tlast_ch0;
    wire 	 buf_error_ch0;
    wire 	 trg_error_ch0;
+   wire [15:0] 	 adc0_I;
+   wire [15:0] 	 adc0_Q;
+`endif   
    
+`ifdef DBG_CH1
+   (* MARK_DEBUG = "TRUE" *)
+   wire [127:0]  tdata_ch1;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 tready_ch1;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 tvalid_ch1;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 tlast_ch1;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 buf_error_ch1;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 trg_error_ch1;
+   (* MARK_DEBUG = "TRUE" *)
+   wire [15:0] 	 adc1_I;
+   (* MARK_DEBUG = "TRUE" *)
+   wire [15:0] 	 adc1_Q;
+`else
    wire [127:0]  tdata_ch1;
    wire 	 tready_ch1;
    wire 	 tvalid_ch1;
    wire 	 tlast_ch1;
    wire 	 buf_error_ch1;
    wire 	 trg_error_ch1;
+`endif   
 
+`ifdef DBG_EXT
+   (* MARK_DEBUG = "TRUE" *)
+   wire [1:0] 	 antenna;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 paen;
+   (* MARK_DEBUG = "TRUE" *)
+   wire 	 pps_os;
+   (* MARK_DEBUG = "TRUE" *)
+   wire [15:0] 	 azimuth;
+`else
    wire [1:0] 	 antenna;
    wire 	 paen;
+   wire 	 pps_os;
+   wire [15:0] 	 azimuth;
+`endif
    
    always @(posedge ref_clk)
        sys_clk_s <= sys_clk;

@@ -15,4 +15,8 @@ set_property -dict {PACKAGE_PIN AV15 IOSTANDARD LVCMOS18} [get_ports {status[7]}
 
 set_property -dict {PACKAGE_PIN  N13 IOSTANDARD LVCMOS12} [get_ports pmod1_3]; # pps
 
+set_property BITSTREAM.CONFIG.USR_ACCESS TIMESTAMP [current_design]
+
+
+
 

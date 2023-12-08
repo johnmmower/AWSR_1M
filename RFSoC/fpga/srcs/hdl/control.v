@@ -32,7 +32,7 @@
 
 `define CH1_CH0_MAXLEN_REG_OFF    15  // RO 0x3C  < ch1_len, ch0_len >
 
-// build, ch lengths
+`define BUILDTIME_REG_OFF         16  // RO 0x40  
 
 `include "system.vh"
 
@@ -75,42 +75,57 @@ module control
    output 	   arst   
    );
 
+   
    wire [31:0] 	   control = reg_from_ps[`CONTROL_REG_OFF +: 32];
    assign arst = ~control[`RUNSTART_BIT] || ~reg_rstn;  // hold at zero until ready
    assign runtx = control[`RUNTX_BIT];
    assign usepa = control[`USEPA_BIT];
    assign runrx_ch0 = control[`RUNRX_CH0_BIT];
    assign runrx_ch1 = control[`RUNRX_CH1_BIT];
-   assign reg_to_ps[`CONTROL_REG_OFF +: 32];
+   assign reg_to_ps[`CONTROL_REG_OFF +: 32] = control;
+
       
    wire [31:0] 	   status;
    assign status[`BUF_ERR_CH0_BIT] = buf_error_ch0;
    assign status[`TRG_ERR_CH0_BIT] = trg_error_ch0;
    assign status[`BUF_ERR_CH1_BIT] = buf_error_ch1;
    assign status[`TRG_ERR_CH1_BIT] = trg_error_ch1;
-   assign reg_to_ps[`STATUS_REG_OFF +: 32];
-      
+   assign reg_to_ps[`STATUS_REG_OFF +: 32] = status;
+   
+   
    assign nextsec = reg_from_ps[`NEXTSEC_REG_OFF*32 +: 32];
-   assign txdelaym1 = reg_from_ps[`TXDELAYM1_REG_OFF*32 += 32];
-   assign txonm1 = reg_from_ps[`TXONM1_REG_OFF*32 += 32];
-   assign prfcntm1 = reg_from_ps[`PRFCNTM1_REG_OFF*32 += 32];
-   assign intcntm1 = reg_from_ps[`INTCNTM1_ANTSEQ_REG_OFF*32 + 16 += 16];
-   assign antseq = reg_from_ps[`INTCNTM1_ANTSEQ_REG_OFF*32 += 8];
-   assign lowazi = reg_from_ps[`AZI_REG_OFF*32 += 16];
-   assign hghazi = reg_from_ps[`AZI_REG_OFF*32 + 16 += 16];
-   assign cfg = reg_from_ps[`CFG_REG_OFF*32 += 16];
-   assign samps_ch0 = reg_from_ps[`SAMPSM1_SAMPS_CH0_REG_OFF*32 += 16];
-   assign sampsm1_ch0 = reg_from_ps[`SAMPSM1_SAMPS_CH0_REG_OFF*32 + 16 += 16];
-   assign shift_ch0 = reg_from_ps[`SHIFT_CH0_REG_OFF*32 += 16];
-   assign delaym1_ch0 = reg_from_ps[`DELAYM1_CH0_REG_OFF*32 += 32];
-   assign samps_ch1 = reg_from_ps[`SAMPSM1_SAMPS_CH1_REG_OFF*32 += 16];
-   assign sampsm1_ch1 = reg_from_ps[`SAMPSM1_SAMPS_CH1_REG_OFF*32 + 16 += 16];
-   assign shift_ch1 = reg_from_ps[`SHIFT_CH1_REG_OFF*32 += 16];
-   assign delaym1_ch1 = reg_from_ps[`DELAYM1_CH1_REG_OFF*32 += 32];
+   assign txdelaym1 = reg_from_ps[`TXDELAYM1_REG_OFF*32 +: 32];
+   assign txonm1 = reg_from_ps[`TXONM1_REG_OFF*32 +: 32];
+   assign prfcntm1 = reg_from_ps[`PRFCNTM1_REG_OFF*32 +: 32];
+   assign intcntm1 = reg_from_ps[`INTCNTM1_ANTSEQ_REG_OFF*32+16 +: 16];
+   assign antseq = reg_from_ps[`INTCNTM1_ANTSEQ_REG_OFF*32 +: 8];
+   assign lowazi = reg_from_ps[`AZI_REG_OFF*32 +: 16];
+   assign hghazi = reg_from_ps[`AZI_REG_OFF*32+16 +: 16];
+   assign cfg = reg_from_ps[`CFG_REG_OFF*32 +: 16];
+   assign samps_ch0 = reg_from_ps[`SAMPSM1_SAMPS_CH0_REG_OFF*32 +: 16];
+   assign sampsm1_ch0 = reg_from_ps[`SAMPSM1_SAMPS_CH0_REG_OFF*32+16 +: 16];
+   assign shift_ch0 = reg_from_ps[`SHIFT_CH0_REG_OFF*32 +: 16];
+   assign delaym1_ch0 = reg_from_ps[`DELAYM1_CH0_REG_OFF*32 +: 32];
+   assign samps_ch1 = reg_from_ps[`SAMPSM1_SAMPS_CH1_REG_OFF*32 +: 16];
+   assign sampsm1_ch1 = reg_from_ps[`SAMPSM1_SAMPS_CH1_REG_OFF*32+16 +: 16];
+   assign shift_ch1 = reg_from_ps[`SHIFT_CH1_REG_OFF*32 +: 16];
+   assign delaym1_ch1 = reg_from_ps[`DELAYM1_CH1_REG_OFF*32 +: 32];
 
+   
    localparam [15:0] ch0_len = `CH0_SIZE;
    localparam [15:0] ch1_len = `CH1_SIZE;
-   assign reg_to_ps[`CH1_CH0_MAXLEN_REG_OFF += 32] = {ch1_len, ch0_len};
+   assign reg_to_ps[`CH1_CH0_MAXLEN_REG_OFF +: 32] = {ch1_len, ch0_len};
+
    
+   wire [31:0] 	   buildtime;
+   USR_ACCESSE2 USR_ACCESSE2_inst 
+     (
+      .CFGCLK   (         ),
+      .DATA     (buildtime),
+      .DATAVALID(         )
+      );
+   assign reg_to_ps[`BUILDTIME_REG_OFF +: 32] = buildtime;
+
+      
 endmodule
 
