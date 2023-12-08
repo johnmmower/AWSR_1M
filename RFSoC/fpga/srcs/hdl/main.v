@@ -1,4 +1,5 @@
-`define CLKF 215040000
+
+`include "system.vh"
 
 module main
   (
@@ -53,6 +54,7 @@ module main
    wire [1023:0] a_reg_to_ps;
    wire [31:0] 	 a_nextsec;
    wire 	 arst;
+   wire 	 ausepa;
    wire 	 aruntx;
    wire 	 arunrx_ch0;
    wire 	 arunrx_ch1;
@@ -85,70 +87,103 @@ module main
    wire 	 tready_ch0;
    wire 	 tvalid_ch0;
    wire 	 tlast_ch0;
+   wire 	 buf_error_ch0;
+   wire 	 trg_error_ch0;
    
    wire [127:0]  tdata_ch1;
    wire 	 tready_ch1;
    wire 	 tvalid_ch1;
    wire 	 tlast_ch1;
-      
+   wire 	 buf_error_ch1;
+   wire 	 trg_error_ch1;
+
+   wire [1:0] 	 antenna;
+   wire 	 paen;
+   
    always @(posedge ref_clk)
        sys_clk_s <= sys_clk;
 
    proc proc_inst
      (
-      .arst         (arst        ),
-      .aruntx       (aruntx      ),
-      .arunrx_ch0   (arunrx_ch0  ),
-      .arunrx_ch1   (arunrx_ch1  ),
-      .atxdelaym1   (atxdelaym1  ),
-      .atxonm1      (atxonm1     ),
-      .aprfcntm1    (aprfcntm1   ),
-      .aintcntm1    (aintcntm1   ),
-      .alowazi      (alowazi     ),
-      .ahghazi      (ahghazi     ),
-      .aantseq      (aantseq     ),
-      .acfg         (acfg        ),
-      .asamps_ch0   (asamps_ch0  ),
-      .asampsm1_ch0 (asampsm1_ch0),
-      .ashift_ch0   (ashift_ch0  ),
-      .adelaym1_ch0 (adelaym1_ch0),
-      .asamps_ch1   (asamps_ch1  ),
-      .asampsm1_ch1 (asampsm1_ch1),
-      .ashift_ch1   (ashift_ch1  ),
-      .adelaym1_ch1 (adelaym1_ch1),
-      .clk          (ref_clk     ),
-      .rst          (ref_rst     ),
-      .sec          (sec         ),
-      .tic          (tic         ),
-      .azimuth      (azimuth     ),
-      .antenna      (            ),
-      .dac_addr     (dac_0_addr  ),
-      .paen         (            ),
-      .rx_I_ch0     (adc0_I      ),
-      .rx_Q_ch0     (adc0_Q      ),
-      .tdata_ch0    (tdata_ch0   ),
-      .tready_ch0   (tready_ch0  ),
-      .tvalid_ch0   (tvalid_ch0  ),
-      .tlast_ch0    (tlast_ch0   ),
-      .buf_error_ch0(            ),
-      .trg_error_ch0(            ),
-      .rx_I_ch1     (adc1_I      ),
-      .rx_Q_ch1     (adc1_Q      ),
-      .tdata_ch1    (tdata_ch1   ),
-      .tready_ch1   (tready_ch1  ),
-      .tvalid_ch1   (tvalid_ch1  ),
-      .tlast_ch1    (tlast_ch1   ),
-      .buf_error_ch1(            ),
-      .trg_error_ch1(            )
+      .arst         (arst         ),
+      .ausepa       (ausepa       ),
+      .aruntx       (aruntx       ),
+      .arunrx_ch0   (arunrx_ch0   ),
+      .arunrx_ch1   (arunrx_ch1   ),
+      .atxdelaym1   (atxdelaym1   ),
+      .atxonm1      (atxonm1      ),
+      .aprfcntm1    (aprfcntm1    ),
+      .aintcntm1    (aintcntm1    ),
+      .alowazi      (alowazi      ),
+      .ahghazi      (ahghazi      ),
+      .aantseq      (aantseq      ),
+      .acfg         (acfg         ),
+      .asamps_ch0   (asamps_ch0   ),
+      .asampsm1_ch0 (asampsm1_ch0 ),
+      .ashift_ch0   (ashift_ch0   ),
+      .adelaym1_ch0 (adelaym1_ch0 ),
+      .asamps_ch1   (asamps_ch1   ),
+      .asampsm1_ch1 (asampsm1_ch1 ),
+      .ashift_ch1   (ashift_ch1   ),
+      .adelaym1_ch1 (adelaym1_ch1 ),
+      .clk          (ref_clk      ),
+      .rst          (ref_rst      ),
+      .sec          (sec          ),
+      .tic          (tic          ),
+      .azimuth      (azimuth      ),
+      .antenna      (antenna      ),
+      .dac_addr     (dac_0_addr   ),
+      .paen         (paen         ),
+      .rx_I_ch0     (adc0_I       ),
+      .rx_Q_ch0     (adc0_Q       ),
+      .tdata_ch0    (tdata_ch0    ),
+      .tready_ch0   (tready_ch0   ),
+      .tvalid_ch0   (tvalid_ch0   ),
+      .tlast_ch0    (tlast_ch0    ),
+      .buf_error_ch0(buf_error_ch0),
+      .trg_error_ch0(trg_error_ch0),
+      .rx_I_ch1     (adc1_I       ),
+      .rx_Q_ch1     (adc1_Q       ),
+      .tdata_ch1    (tdata_ch1    ),
+      .tready_ch1   (tready_ch1   ),
+      .tvalid_ch1   (tvalid_ch1   ),
+      .tlast_ch1    (tlast_ch1    ),
+      .buf_error_ch1(buf_error_ch1),
+      .trg_error_ch1(trg_error_ch1)
       );
-/////////////////////////////////////// update control   
+
    control control_inst
      (
-      .reg_clk    (a_reg_clk    ),
-      .reg_rstn   (a_reg_rstn   ),
-      .reg_from_ps(a_reg_from_ps),
-      .reg_to_ps  (a_reg_to_ps  ),
-      .nextsec    (a_nextsec    )
+      .reg_clk      (a_reg_clk    ),
+      .reg_rstn     (a_reg_rstn   ),
+      .reg_from_ps  (a_reg_from_ps),
+      .reg_to_ps    (a_reg_to_ps  ),
+      .nextsec      (a_nextsec    ),
+      .runtx        (aruntx       ),
+      .usepa        (ausepa       ),
+      .runrx_ch0    (arunrx_ch0   ),
+      .runrx_ch1    (arunrx_ch1   ),
+      .txdelaym1    (atxdelaym1   ),
+      .txonm1       (atxonm1      ),
+      .prfcntm1     (aprfcntm1    ),
+      .intcntm1     (aintcntm1    ),
+      .lowazi       (alowazi      ),
+      .hghazi       (ahghazi      ),
+      .antseq       (aantseq      ),
+      .cfg          (acfg         ),
+      .samps_ch0    (asamps_ch0   ),
+      .sampsm1_ch0  (asampsm1_ch0 ),
+      .shift_ch0    (ashift_ch0   ),
+      .delaym1_ch0  (adelaym1_ch0 ),
+      .buf_error_ch0(buf_error_ch0),
+      .trg_error_ch0(trg_error_ch0),
+      .samps_ch1    (asamps_ch1   ),
+      .sampsm1_ch1  (asampsm1_ch1 ),
+      .shift_ch1    (ashift_ch1   ),
+      .delaym1_ch1  (adelaym1_ch1 ),
+      .buf_error_ch1(buf_error_ch1),
+      .buf_error_ch1(trg_error_ch1),
+      .arst         (arst         )
       );
       
    debounce debounce_pps
