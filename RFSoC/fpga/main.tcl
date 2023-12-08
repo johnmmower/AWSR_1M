@@ -15,6 +15,7 @@ set origin_dir [file dirname [info script]]
 create_project main $origin_dir/main -part xczu28dr-ffvg1517-2-e
 
 add_files [glob srcs/hdl/*.v]
+add_files [glob srcs/hdl/*.vh]
 add_files -fileset constrs_1 [glob srcs/xdc/*.xdc]
 import_files -force -norecurse
 
