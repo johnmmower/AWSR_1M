@@ -70,19 +70,19 @@ module control
    output [15:0]   shift_ch1,
    output [31:0]   delaym1_ch1,
    input 	   buf_error_ch1,
-   input 	   buf_error_ch1,
+   input 	   trg_error_ch1,
    
    output 	   arst   
    );
 
    
-   wire [31:0] 	   control = reg_from_ps[`CONTROL_REG_OFF +: 32];
+   wire [31:0] 	   control = reg_from_ps[`CONTROL_REG_OFF*32 +: 32];
    assign arst = ~control[`RUNSTART_BIT] || ~reg_rstn;  // hold at zero until ready
    assign runtx = control[`RUNTX_BIT];
    assign usepa = control[`USEPA_BIT];
    assign runrx_ch0 = control[`RUNRX_CH0_BIT];
    assign runrx_ch1 = control[`RUNRX_CH1_BIT];
-   assign reg_to_ps[`CONTROL_REG_OFF +: 32] = control;
+   assign reg_to_ps[`CONTROL_REG_OFF*32 +: 32] = control;
 
       
    wire [31:0] 	   status;
@@ -90,7 +90,7 @@ module control
    assign status[`TRG_ERR_CH0_BIT] = trg_error_ch0;
    assign status[`BUF_ERR_CH1_BIT] = buf_error_ch1;
    assign status[`TRG_ERR_CH1_BIT] = trg_error_ch1;
-   assign reg_to_ps[`STATUS_REG_OFF +: 32] = status;
+   assign reg_to_ps[`STATUS_REG_OFF*32 +: 32] = status;
    
    
    assign nextsec = reg_from_ps[`NEXTSEC_REG_OFF*32 +: 32];
@@ -114,7 +114,7 @@ module control
    
    localparam [15:0] ch0_len = `CH0_SIZE;
    localparam [15:0] ch1_len = `CH1_SIZE;
-   assign reg_to_ps[`CH1_CH0_MAXLEN_REG_OFF +: 32] = {ch1_len, ch0_len};
+   assign reg_to_ps[`CH1_CH0_MAXLEN_REG_OFF*32 +: 32] = {ch1_len, ch0_len};
 
    
    wire [31:0] 	   buildtime;
@@ -124,7 +124,7 @@ module control
       .DATA     (buildtime),
       .DATAVALID(         )
       );
-   assign reg_to_ps[`BUILDTIME_REG_OFF +: 32] = buildtime;
+   assign reg_to_ps[`BUILDTIME_REG_OFF*32 +: 32] = buildtime;
 
       
 endmodule

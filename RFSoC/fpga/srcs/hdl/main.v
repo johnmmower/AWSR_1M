@@ -228,7 +228,7 @@ module main
       .shift_ch1    (ashift_ch1   ),
       .delaym1_ch1  (adelaym1_ch1 ),
       .buf_error_ch1(buf_error_ch1),
-      .buf_error_ch1(trg_error_ch1),
+      .trg_error_ch1(trg_error_ch1),
       .arst         (arst         )
       );
       
