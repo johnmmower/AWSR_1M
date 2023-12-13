@@ -32,7 +32,7 @@ module main
    
    output [7:0] status,
    
-   input 	pmod1_3         // pps
+   output 	pmod1_3         // paen monitor
    );
 
    assign status[7:4] = 0;
@@ -145,7 +145,9 @@ module main
    wire 	 pps_os;
    wire [15:0] 	 azimuth;
 `endif
-   
+
+   assign pmod1_3 = paen;
+      
    always @(posedge ref_clk)
        sys_clk_s <= sys_clk;
 
@@ -235,7 +237,7 @@ module main
    debounce debounce_pps
      (
       .clk(ref_clk),
-      .in (pmod1_3),
+      .in (1'b0),
       .re (pps_os )
       );
    

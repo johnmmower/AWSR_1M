@@ -57,13 +57,28 @@ module proc
    output 	  trg_error_ch1
    );
 
+`ifdef DBG_TRIGGER
+   (* MARK_DEBUG = "TRUE" *)
+   wire ltch_var;
+   (* MARK_DEBUG = "TRUE" *)
+   wire rst;
+   (* MARK_DEBUG = "TRUE" *)
+   wire tx_trig;
+   (* MARK_DEBUG = "TRUE" *)
+   wire rx_trig;
+   (* MARK_DEBUG = "TRUE" *)
+   wire rx_trig_strt;
+   (* MARK_DEBUG = "TRUE" *)
+   wire rx_trig_last;
+`else
    wire ltch_var;
    wire rst;
    wire tx_trig;
    wire rx_trig;
    wire rx_trig_strt;
    wire rx_trig_last;
-
+`endif
+   
    reg 	usepa;
    reg 	runrx_ch0;
    reg 	runrx_ch1;
