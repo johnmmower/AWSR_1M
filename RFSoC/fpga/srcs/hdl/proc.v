@@ -1,7 +1,7 @@
 
 `include "system.vh"
 
-module proc
+module proc #(parameter SIM = 0)
   (
    input 	  arst,
    
@@ -128,7 +128,7 @@ module proc
       );   
 
    rx_packer
-     #(.DEPTH(`CH0_SIZE))
+     #(.DEPTH(`CH0_SIZE), .SIM(SIM))
    rx_packer_ch0_inst
      (
       .clk      (clk                ),
@@ -139,11 +139,11 @@ module proc
       .sec      (sec                ),
       .tic      (tic                ),
       .ant      (antenna            ),
-      .pcfg     (cfg                ),
-      .psamps   (samps_ch0          ),
-      .psampsm1 (sampsm1_ch0        ),
-      .pshift   (shift_ch0          ),
-      .pdelaym1 (delam1_ch0         ),
+      .cfg      (cfg                ),
+      .samps    (samps_ch0          ),
+      .sampsm1  (sampsm1_ch0        ),
+      .shift    (shift_ch0          ),
+      .delaym1  (delaym1_ch0        ),
       .rx_I     (rx_I_ch0           ),
       .rx_Q     (rx_Q_ch0           ),
       .tdata    (tdata_ch0          ),
@@ -155,7 +155,7 @@ module proc
       );
    
    rx_packer
-     #(.DEPTH(`CH1_SIZE), .ID(1))
+     #(.DEPTH(`CH1_SIZE), .ID(1), .SIM(SIM))
    rx_packer_ch1_inst
      (
       .clk      (clk                ),
@@ -166,11 +166,11 @@ module proc
       .sec      (sec                ),
       .tic      (tic                ),
       .ant      (antenna            ),
-      .pcfg     (cfg                ),
-      .psamps   (samps_ch1          ),
-      .psampsm1 (sampsm1_ch1        ),
-      .pshift   (shift_ch1          ),
-      .pdelaym1 (delam1_ch1         ),
+      .cfg      (cfg                ),
+      .samps    (samps_ch1          ),
+      .sampsm1  (sampsm1_ch1        ),
+      .shift    (shift_ch1          ),
+      .delaym1  (delam1_ch1         ),
       .rx_I     (rx_I_ch1           ),
       .rx_Q     (rx_Q_ch1           ),
       .tdata    (tdata_ch1          ),
@@ -188,15 +188,15 @@ module proc
       .trig    (tx_trig          ),
       .addr    (dac_addr         ),
       .paen    (paen             ),
-      .pusepa  (usepa            ),
-      .pdelaym1(txdelaym1        ),
-      .ponm1   (txonm1           )
+      .usepa   (usepa            ),
+      .delaym1 (txdelaym1        ),
+      .onm1    (txonm1           )
       );
    
    trigger trigger_inst
      (
       .clk         (clk         ),
-      .run         (runall      ),
+      .rst         (~runall     ),
       .azimuth     (azimuth     ),
       .prfcntm1    (prfcntm1    ),
       .intcntm1    (intcntm1    ),

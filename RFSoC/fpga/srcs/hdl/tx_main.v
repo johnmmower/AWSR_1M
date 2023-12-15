@@ -15,24 +15,11 @@ module tx_main #(parameter ADDRBITS = 13)
    );
 
    reg [31:0] cntr;
-   reg [31:0] delaym1;
-   reg [31:0] onm1;
-   reg 	      usepa;
    reg 	      rst_t1;
    
    always @(posedge clk) begin
    
       rst_t1 <= rst;
-
-      if (~rst && rst_t1) begin
-	 delaym1 <= pdelaym1;
-	 onm1 <= ponm1;
-      end
-
-      if (rst)
-	usepa <= 0;
-      else if (~rst && rst_t1)
-	usepa <= pusepa;
 
       if (rst)
 	cntr <= 32'hFFFF_FFFF;

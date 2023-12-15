@@ -15,11 +15,11 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0, parameter ID=0)
    input [1:0]        ant,       // current antenna set before trig is relayed
 
    // p vals are assumed static for triggering period
-   input [15:0]       pcfg,      // data tag
-   input [15:0]       psamps,    //
-   input [15:0]       psampsm1,  // number of samples, always psamps & 0xFFFC - 1
-   input [15:0]       pshift,    // number of bits to trim
-   input [31:0]       pdelaym1,  // tics to delay to trig -1
+   input [15:0]       cfg,       // data tag
+   input [15:0]       samps,     //
+   input [15:0]       sampsm1,   // number of samples, always psamps & 0xFFFC - 1
+   input [15:0]       shift,     // number of bits to trim
+   input [31:0]       delaym1,   // tics to delay to trig -1
    
    input [15:0]       rx_I,
    input [15:0]       rx_Q,
@@ -75,10 +75,10 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0, parameter ID=0)
    always @(posedge clk) begin
       
       if (itrig && itrig_strt)
-	tdata <= {`SYNC, pcfg,
+	tdata <= {`SYNC, cfg,
                   sec,
                   tic,
-                  6'b000000, ant, id, psamps};
+                  6'b000000, ant, id, samps};
       else 
 	tdata <= bufdat;
 
@@ -108,13 +108,13 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0, parameter ID=0)
 	 trig_strt_cght <= trig_strt;
 	 trig_last_cght <= trig_last;
       end
-      else if (trig_cntr == pdelaym1) begin
+      else if (trig_cntr == delaym1) begin
 	 trig_cght <= 0;
 	 trig_strt_cght <= 0;
 	 trig_last_cght <= 0;
       end
 
-      if (running && trig_cght && trig_cntr == pdelaym1) begin
+      if (running && trig_cght && trig_cntr == delaym1) begin
 	 itrig <= 1;
 	 itrig_strt <= trig_strt_cght;
 	 itrig_last <= trig_last_cght;
@@ -147,8 +147,8 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0, parameter ID=0)
       .trig     (itrig       ),
       .trig_strt(itrig_strt  ),
       .trig_last(itrig_last  ),
-      .shift    (pshift      ),
-      .sampsm1  (psampsm1    ),
+      .shift    (shift       ),
+      .sampsm1  (sampsm1     ),
       .din_I    (rx_I        ),
       .din_Q    (rx_Q        ),
       .dout_I   (accum_I     ),

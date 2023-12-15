@@ -5,18 +5,18 @@
 
 module tb_proc;
 
-   reg clk;
+   reg clk = 0;
 
-   reg arst;
+   reg arst = 1;
 
-   reg [31:0] tic;
+   reg [31:0] tic = 0;
 
    wire [1:0] antenna;
    wire [12:0] dac_addr;
    wire        paen;
 
-   input [15:0] rx_I_ch0;
-   input [15:0] rx_Q_ch0;
+   reg [15:0] rx_I_ch0 = 0;
+   reg [15:0] rx_Q_ch0 = 0;
    wire [127:0] tdata_ch0;
    wire 	tvalid_ch0;
    wire 	tlast_ch0;
@@ -24,18 +24,17 @@ module tb_proc;
    initial forever #(1.0/`CLKF/2.0/1e-9) clk = ~clk;
 
    initial begin
-      tic = 0;
-      arst = 1;
-
       #100;
       arst = 0;
       
    end
 
-   always @(posedge clk)
-     tic <= tic + 'b1;
+   always @(posedge clk) begin
+      tic <= tic + 'b1;
+      rx_I_ch0 <= tic[15:0];
+   end
    
-   proc uut
+   proc #(.SIM(1)) uut
      (
       .arst(arst),
       .aruntx(1'b1),
@@ -74,12 +73,12 @@ module tb_proc;
       .tlast_ch0(tlast_ch0),
       .buf_error_ch0(),
       .trg_error_ch0(),
-      .rx_I_ch1(rx_I_ch1),
-      .rx_Q_ch1(rx_Q_ch1),
-      .tdata_ch1(tdata_ch1),
+      .rx_I_ch1(16'd0),
+      .rx_Q_ch1(16'd0),
+      .tdata_ch1(),
       .tready_ch1(1'b1),
-      .tvalid_ch1(tvalid_ch1),
-      .tlast_ch1(tlast_ch1),
+      .tvalid_ch1(),
+      .tlast_ch1(),
       .buf_error_ch1(),
       .trg_error_ch1()
       );
