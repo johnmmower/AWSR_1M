@@ -56,8 +56,9 @@ module main
    wire 	 aruntx;
    wire 	 arunrx_ch0;
    wire 	 arunrx_ch1;
+   wire 	 areset_fifo;
    wire [31:0] 	 atxdelaym1;
-   wire [31:0] 	 atxonm;
+   wire [31:0] 	 atxonm1;
    wire [31:0] 	 aprfcntm1;
    wire [15:0] 	 aintcntm1;
    wire [15:0] 	 alowazi;
@@ -75,76 +76,38 @@ module main
 
    wire [31:0] 	 tic;
    wire [31:0] 	 sec;
-
-`ifdef DBG_CH0
-   (* MARK_DEBUG = "TRUE" *)
-   wire [127:0]  tdata_ch0;
-   (* MARK_DEBUG = "TRUE" *)
-   wire 	 tready_ch0;
-   (* MARK_DEBUG = "TRUE" *)
-   wire 	 tvalid_ch0;
-   (* MARK_DEBUG = "TRUE" *)
-   wire 	 tlast_ch0;
-   (* MARK_DEBUG = "TRUE" *)
-   wire 	 buf_error_ch0;
-   (* MARK_DEBUG = "TRUE" *)
-   wire 	 trg_error_ch0;
-   (* MARK_DEBUG = "TRUE" *)
-   wire [15:0] 	 adc0_I;
-   (* MARK_DEBUG = "TRUE" *)
-   wire [15:0] 	 adc0_Q;
-`else
-   wire [127:0]  tdata_ch0;
-   wire 	 tready_ch0;
-   wire 	 tvalid_ch0;
-   wire 	 tlast_ch0;
-   wire 	 buf_error_ch0;
-   wire 	 trg_error_ch0;
-   wire [15:0] 	 adc0_I;
-   wire [15:0] 	 adc0_Q;
-`endif   
+   wire [12:0] 	 dac_0_addr;
+   wire 	 reset_fifo;
    
-`ifdef DBG_CH1
    (* MARK_DEBUG = "TRUE" *)
-   wire [127:0]  tdata_ch1;
+   wire [127:0]  tdata_ch0;
    (* MARK_DEBUG = "TRUE" *)
-   wire 	 tready_ch1;
+   wire 	 tready_ch0;
    (* MARK_DEBUG = "TRUE" *)
-   wire 	 tvalid_ch1;
+   wire 	 tvalid_ch0;
    (* MARK_DEBUG = "TRUE" *)
-   wire 	 tlast_ch1;
+   wire 	 tlast_ch0;
    (* MARK_DEBUG = "TRUE" *)
-   wire 	 buf_error_ch1;
+   wire 	 buf_error_ch0;
    (* MARK_DEBUG = "TRUE" *)
-   wire 	 trg_error_ch1;
+   wire 	 trg_error_ch0;
    (* MARK_DEBUG = "TRUE" *)
-   wire [15:0] 	 adc1_I;
+   wire [15:0] 	 adc0_I;
    (* MARK_DEBUG = "TRUE" *)
-   wire [15:0] 	 adc1_Q;
-`else
-   wire [127:0]  tdata_ch1;
-   wire 	 tready_ch1;
-   wire 	 tvalid_ch1;
-   wire 	 tlast_ch1;
-   wire 	 buf_error_ch1;
-   wire 	 trg_error_ch1;
-`endif   
+   wire [15:0] 	 adc0_Q;
 
-`ifdef DBG_EXT
-   (* MARK_DEBUG = "TRUE" *)
+   wire [127:0]  tdata_ch1;
+   wire 	 tready_ch1;
+   wire 	 tvalid_ch1;
+   wire 	 tlast_ch1;
+   wire 	 buf_error_ch1;
+   wire 	 trg_error_ch1;
+      
    wire [1:0] 	 antenna;
    (* MARK_DEBUG = "TRUE" *)
    wire 	 paen;
-   (* MARK_DEBUG = "TRUE" *)
-   wire 	 pps_os;
-   (* MARK_DEBUG = "TRUE" *)
-   wire [15:0] 	 azimuth;
-`else
-   wire [1:0] 	 antenna;
-   wire 	 paen;
    wire 	 pps_os;
    wire [15:0] 	 azimuth;
-`endif
 
    assign pmod1_3 = paen;
       
@@ -211,6 +174,7 @@ module main
       .usepa        (ausepa       ),
       .runrx_ch0    (arunrx_ch0   ),
       .runrx_ch1    (arunrx_ch1   ),
+      .reset_fifo   (areset_fifo  ),
       .txdelaym1    (atxdelaym1   ),
       .txonm1       (atxonm1      ),
       .prfcntm1     (aprfcntm1    ),
@@ -233,6 +197,14 @@ module main
       .trg_error_ch1(trg_error_ch1),
       .arst         (arst         )
       );
+
+   async_debounce async_rst_fifo_inst
+     (
+      .clk    (ref_clk    ),
+      .adin   (areset_fifo),
+      .dout   (reset_fifo ),
+      .oneshot()
+      );   
       
    debounce debounce_pps
      (
@@ -329,7 +301,7 @@ module main
 
       .user_sysref_adc (sys_clk_s       ),
       .ref_clk         (ref_clk         ),
-      .ref_rstn        (~ref_rst        ),
+      .ref_rstn        (~reset_fifo     ),
       
       .RX_0_tdata      (tdata_ch0       ),
       .RX_0_tready     (tready_ch0      ),

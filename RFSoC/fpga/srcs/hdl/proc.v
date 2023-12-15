@@ -57,7 +57,6 @@ module proc
    output 	  trg_error_ch1
    );
 
-`ifdef DBG_TRIGGER
    (* MARK_DEBUG = "TRUE" *)
    wire ltch_var;
    (* MARK_DEBUG = "TRUE" *)
@@ -70,28 +69,34 @@ module proc
    wire rx_trig_strt;
    (* MARK_DEBUG = "TRUE" *)
    wire rx_trig_last;
-`else
-   wire ltch_var;
-   wire rst;
-   wire tx_trig;
-   wire rx_trig;
-   wire rx_trig_strt;
-   wire rx_trig_last;
-`endif
    
+   (* MARK_DEBUG = "TRUE" *)
    reg 	usepa;
+   (* MARK_DEBUG = "TRUE" *)
    reg 	runrx_ch0;
+   (* MARK_DEBUG = "TRUE" *)
    reg 	runrx_ch1;
+   (* MARK_DEBUG = "TRUE" *)
    reg [31:0] txdelaym1;
+   (* MARK_DEBUG = "TRUE" *)
    reg [31:0] txonm1;
+   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] cfg;   
+   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] samps_ch0;
+   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] sampsm1_ch0;
+   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] shift_ch0;  
+   (* MARK_DEBUG = "TRUE" *)
    reg [31:0] delaym1_ch0;
+   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] samps_ch1;  
+   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] sampsm1_ch1;
+   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] shift_ch1;  
+   (* MARK_DEBUG = "TRUE" *)
    reg [31:0] delaym1_ch1;
 
    // "trigger" grabs it's own vars, sends this signal

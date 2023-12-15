@@ -1248,7 +1248,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_intf_net -intf_net zynq_ultra_ps_e_0_M_AXI_HPM0_FPD [get_bd_intf_pins ps8_0_axi_periph/S00_AXI] [get_bd_intf_pins zynq_ultra_ps_e_0/M_AXI_HPM0_FPD]
 
   # Create port connections
-  connect_bd_net -net VCC_dout [get_bd_pins VCC/dout] [get_bd_pins usp_rf_data_converter_0/m00_axis_tready] [get_bd_pins usp_rf_data_converter_0/m01_axis_tready] [get_bd_pins usp_rf_data_converter_0/m02_axis_tready] [get_bd_pins usp_rf_data_converter_0/m03_axis_tready] [get_bd_pins usp_rf_data_converter_0/s13_axis_tvalid]
+  connect_bd_net -net VCC_dout [get_bd_pins VCC/dout] [get_bd_pins usp_rf_data_converter_0/m00_axis_tready] [get_bd_pins usp_rf_data_converter_0/m01_axis_tready] [get_bd_pins usp_rf_data_converter_0/m02_axis_tready] [get_bd_pins usp_rf_data_converter_0/m03_axis_tready] [get_bd_pins usp_rf_data_converter_0/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_0/s0_axis_aresetn] [get_bd_pins usp_rf_data_converter_0/s13_axis_tvalid] [get_bd_pins usp_rf_data_converter_0/s1_axis_aresetn] [get_bd_pins util_vector_logic_0/Op1]
   connect_bd_net -net addrb_0_1 [get_bd_ports dac_0_addr] [get_bd_pins blk_mem_gen_0/addrb]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets addrb_0_1]
   connect_bd_net -net axi32reg_0_regs_out [get_bd_ports regs_out] [get_bd_pins axi32reg_0/regs_out]
@@ -1260,7 +1260,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net axi_dma_1_s2mm_introut [get_bd_pins axi_dma_1/s2mm_introut] [get_bd_pins xlconcat_0/In2]
   connect_bd_net -net blk_mem_gen_0_doutb [get_bd_pins blk_mem_gen_0/doutb] [get_bd_pins usp_rf_data_converter_0/s13_axis_tdata]
   connect_bd_net -net ref_clk_1 [get_bd_ports ref_clk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins axis_data_fifo_1/s_axis_aclk] [get_bd_pins blk_mem_gen_0/clkb] [get_bd_pins usp_rf_data_converter_0/m0_axis_aclk] [get_bd_pins usp_rf_data_converter_0/s0_axis_aclk] [get_bd_pins usp_rf_data_converter_0/s1_axis_aclk]
-  connect_bd_net -net ref_rstn_1 [get_bd_ports ref_rstn] [get_bd_pins axis_data_fifo_0/s_axis_aresetn] [get_bd_pins axis_data_fifo_1/s_axis_aresetn] [get_bd_pins usp_rf_data_converter_0/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_0/s0_axis_aresetn] [get_bd_pins usp_rf_data_converter_0/s1_axis_aresetn] [get_bd_pins util_vector_logic_0/Op1]
+  connect_bd_net -net ref_rstn_2 [get_bd_ports ref_rstn] [get_bd_pins axis_data_fifo_0/s_axis_aresetn] [get_bd_pins axis_data_fifo_1/s_axis_aresetn]
   connect_bd_net -net regs_in_0_1 [get_bd_ports regs_in] [get_bd_pins axi32reg_0/regs_in]
   connect_bd_net -net rst_ps8_0_249M_peripheral_aresetn [get_bd_pins rst_ps8_0_249M/peripheral_aresetn] [get_bd_pins smartconnect_0/aresetn] [get_bd_pins smartconnect_1/aresetn]
   connect_bd_net -net rst_ps8_0_24M_peripheral_aresetn [get_bd_ports reg_rstn] [get_bd_pins axi32reg_0/S_AXI_ARESETN] [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn] [get_bd_pins axi_dma_0/axi_resetn] [get_bd_pins axi_dma_1/axi_resetn] [get_bd_pins ps8_0_axi_periph/ARESETN] [get_bd_pins ps8_0_axi_periph/M00_ARESETN] [get_bd_pins ps8_0_axi_periph/M01_ARESETN] [get_bd_pins ps8_0_axi_periph/M02_ARESETN] [get_bd_pins ps8_0_axi_periph/M03_ARESETN] [get_bd_pins ps8_0_axi_periph/M04_ARESETN] [get_bd_pins ps8_0_axi_periph/S00_ARESETN] [get_bd_pins rst_ps8_0_24M/peripheral_aresetn] [get_bd_pins usp_rf_data_converter_0/s_axi_aresetn]

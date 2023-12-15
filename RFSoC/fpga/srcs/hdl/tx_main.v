@@ -1,5 +1,4 @@
 
-
 module tx_main #(parameter ADDRBITS = 13)
   (
    input 		     clk,
@@ -17,11 +16,9 @@ module tx_main #(parameter ADDRBITS = 13)
    );
 
    reg [31:0] cntr;
-   
    reg [31:0] delaym1;
    reg [31:0] onm1;
    reg 	      usepa;
-   
    reg 	      rst_t1;
    
    always @(posedge clk) begin

@@ -1,12 +1,12 @@
 
 `define CONTROL_REG_OFF           0   // RW 0x00 
 
-`define RUNSTART_BIT  0
-`define RUNTX_BIT     1
-`define USEPA_BIT     2
-`define RUNRX_CH0_BIT 3
-`define RUNRX_CH1_BIT 4
-
+`define RUNSTART_BIT   0
+`define RUNTX_BIT      1
+`define USEPA_BIT      2
+`define RUNRX_CH0_BIT  3
+`define RUNRX_CH1_BIT  4
+`define RESET_FIFO_BIT 5
 
 `define STATUS_REG_OFF            1   // RO 0x04
 
@@ -50,7 +50,8 @@ module control
    output 	   usepa,
    output 	   runrx_ch0,
    output 	   runrx_ch1,
-
+   output 	   reset_fifo,
+   
    output [31:0]   txdelaym1,
    output [31:0]   txonm1,
    output [31:0]   prfcntm1,
@@ -82,6 +83,7 @@ module control
    assign usepa = control[`USEPA_BIT];
    assign runrx_ch0 = control[`RUNRX_CH0_BIT];
    assign runrx_ch1 = control[`RUNRX_CH1_BIT];
+   assign reset_fifo = control[`RESET_FIFO_BIT];
    assign reg_to_ps[`CONTROL_REG_OFF*32 +: 32] = control;
 
       

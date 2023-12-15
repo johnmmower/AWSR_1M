@@ -13,8 +13,8 @@ module tb_tx_main;
    wire        paen;
 
    reg 	       pusepa = 1;
-   reg [31:0]  pdelaym1 = 15;
-   reg [31:0]  ponm1    = 31;
+   reg [31:0]  pdelaym1 = 107;
+   reg [31:0]  ponm1    = 344;
    
    initial forever #(1.0/`CLKF/2.0/1e-9) clk = ~clk;
 

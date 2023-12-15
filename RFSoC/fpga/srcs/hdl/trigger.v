@@ -25,7 +25,7 @@ module trigger
    );
 
    wire run = ~rst;
-   reg 	run_t1, run_t2;
+   reg 	run_t1, run_t2, run_t3;
    reg 	runtx;
    
    reg 	      dwell_trig;
@@ -64,7 +64,8 @@ module trigger
 
       run_t1 <= run;
       run_t2 <= run_t1;
-
+      run_t3 <= run_t2;
+            
       dwell_trig_t1 <= dwell_trig;
       dwell_trig_t2 <= dwell_trig_t1;
       dwell_trig_t3 <= dwell_trig_t2;
@@ -126,12 +127,12 @@ module trigger
       end
       
       // count down
-      if (run_t1 && (~run_t2 || dwell_cntr >= prfcntm1))
+      if (run_t2 && (~run_t3 || dwell_cntr >= prfcntm1))
 	dwell_cntr <= 0;
       else
 	dwell_cntr <= dwell_cntr + 'b1;
 
-      if (run_t1 && dwell_cntr == 0)
+      if (run_t2 && dwell_cntr == 0)
 	dwell_trig <= 1;
       else
 	dwell_trig <= 0;
