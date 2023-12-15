@@ -57,55 +57,55 @@ module proc
    output 	  trg_error_ch1
    );
 
-   (* MARK_DEBUG = "TRUE" *)
    wire ltch_var;
-   (* MARK_DEBUG = "TRUE" *)
-   wire rst;
-   (* MARK_DEBUG = "TRUE" *)
    wire tx_trig;
-   (* MARK_DEBUG = "TRUE" *)
    wire rx_trig;
-   (* MARK_DEBUG = "TRUE" *)
    wire rx_trig_strt;
-   (* MARK_DEBUG = "TRUE" *)
    wire rx_trig_last;
-   
-   (* MARK_DEBUG = "TRUE" *)
+
+   wire run;
+   reg 	run_t1;
+   reg 	runall;
+     
    reg 	usepa;
-   (* MARK_DEBUG = "TRUE" *)
    reg 	runrx_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    reg 	runrx_ch1;
-   (* MARK_DEBUG = "TRUE" *)
+   reg 	runtx;
+   reg [31:0] prfcntm1;
+   reg [15:0] intcntm1;
+   reg [15:0] lowazi;
+   reg [15:0] hghazi;
+   reg [7:0]  antseq;
    reg [31:0] txdelaym1;
-   (* MARK_DEBUG = "TRUE" *)
    reg [31:0] txonm1;
-   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] cfg;   
-   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] samps_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] sampsm1_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] shift_ch0;  
-   (* MARK_DEBUG = "TRUE" *)
    reg [31:0] delaym1_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] samps_ch1;  
-   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] sampsm1_ch1;
-   (* MARK_DEBUG = "TRUE" *)
    reg [15:0] shift_ch1;  
-   (* MARK_DEBUG = "TRUE" *)
    reg [31:0] delaym1_ch1;
 
-   // "trigger" grabs it's own vars, sends this signal
-   // to grab other modules parameters for run
+   assign rst = ~runall;
+   
+   always @(posedge clk) begin
+      run_t1 <= run;
+      runall <= run_t1;
+   end
+   
    always @(posedge clk)
-     if (ltch_var) begin
+     if (run && !run_t1) begin
 	usepa       <= ausepa;
 	runrx_ch0   <= arunrx_ch0;
 	runrx_ch1   <= arunrx_ch1;
+	runtx       <= aruntx;
+	prfcntm1    <= aprfcntm1;
+	intcntm1    <= aintcntm1;
+	lowazi      <= alowazi;
+	hghazi      <= ahghazi;
+	antseq      <= aantseq;
 	txdelaym1   <= atxdelaym1;
 	txonm1      <= atxonm1;
 	cfg         <= acfg;
@@ -119,98 +119,96 @@ module proc
 	delaym1_ch1 <= adelaym1_ch1;
      end	
    
+   async_debounce async_run_inst
+     (
+      .clk    (clk  ),
+      .adin   (~arst),
+      .dout   (run  ),
+      .oneshot()
+      );   
+
    rx_packer
      #(.DEPTH(`CH0_SIZE))
    rx_packer_ch0_inst
      (
-      .clk      (clk              ),
-      .run      (~rst && runrx_ch0),
-      .trig     (rx_trig          ),
-      .trig_strt(rx_trig_strt     ),
-      .trig_last(rx_trig_last     ),
-      .sec      (sec              ),
-      .tic      (tic              ),
-      .ant      (antenna          ),
-      .pcfg     (cfg              ),
-      .psamps   (samps_ch0        ),
-      .psampsm1 (sampsm1_ch0      ),
-      .pshift   (shift_ch0        ),
-      .pdelaym1 (delam1_ch0       ),
-      .rx_I     (rx_I_ch0         ),
-      .rx_Q     (rx_Q_ch0         ),
-      .tdata    (tdata_ch0        ),
-      .tready   (tready_ch0       ),
-      .tvalid   (tvalid_ch0       ),
-      .tlast    (tlast_ch0        ),
-      .buf_error(buf_error_ch0    ),
-      .trg_error(trg_error_ch0    )
+      .clk      (clk                ),
+      .run      (runall && runrx_ch0),
+      .trig     (rx_trig            ),
+      .trig_strt(rx_trig_strt       ),
+      .trig_last(rx_trig_last       ),
+      .sec      (sec                ),
+      .tic      (tic                ),
+      .ant      (antenna            ),
+      .pcfg     (cfg                ),
+      .psamps   (samps_ch0          ),
+      .psampsm1 (sampsm1_ch0        ),
+      .pshift   (shift_ch0          ),
+      .pdelaym1 (delam1_ch0         ),
+      .rx_I     (rx_I_ch0           ),
+      .rx_Q     (rx_Q_ch0           ),
+      .tdata    (tdata_ch0          ),
+      .tready   (tready_ch0         ),
+      .tvalid   (tvalid_ch0         ),
+      .tlast    (tlast_ch0          ),
+      .buf_error(buf_error_ch0      ),
+      .trg_error(trg_error_ch0      )
       );
    
    rx_packer
      #(.DEPTH(`CH1_SIZE), .ID(1))
    rx_packer_ch1_inst
      (
-      .clk      (clk              ),
-      .run      (~rst && runrx_ch1),
-      .trig     (rx_trig          ),
-      .trig_strt(rx_trig_strt     ),
-      .trig_last(rx_trig_last     ),
-      .sec      (sec              ),
-      .tic      (tic              ),
-      .ant      (antenna          ),
-      .pcfg     (cfg              ),
-      .psamps   (samps_ch1        ),
-      .psampsm1 (sampsm1_ch1      ),
-      .pshift   (shift_ch1        ),
-      .pdelaym1 (delam1_ch1       ),
-      .rx_I     (rx_I_ch1         ),
-      .rx_Q     (rx_Q_ch1         ),
-      .tdata    (tdata_ch1        ),
-      .tready   (tready_ch1       ),
-      .tvalid   (tvalid_ch1       ),
-      .tlast    (tlast_ch1        ),
-      .buf_error(buf_error_ch1    ),
-      .trg_error(trg_error_ch1    )
+      .clk      (clk                ),
+      .run      (runall && runrx_ch1),
+      .trig     (rx_trig            ),
+      .trig_strt(rx_trig_strt       ),
+      .trig_last(rx_trig_last       ),
+      .sec      (sec                ),
+      .tic      (tic                ),
+      .ant      (antenna            ),
+      .pcfg     (cfg                ),
+      .psamps   (samps_ch1          ),
+      .psampsm1 (sampsm1_ch1        ),
+      .pshift   (shift_ch1          ),
+      .pdelaym1 (delam1_ch1         ),
+      .rx_I     (rx_I_ch1           ),
+      .rx_Q     (rx_Q_ch1           ),
+      .tdata    (tdata_ch1          ),
+      .tready   (tready_ch1         ),
+      .tvalid   (tvalid_ch1         ),
+      .tlast    (tlast_ch1          ),
+      .buf_error(buf_error_ch1      ),
+      .trg_error(trg_error_ch1      )
       );
    
    tx_main tx_main_inst
      (
-      .clk     (clk      ),
-      .rst     (rst      ),
-      .trig    (tx_trig  ),
-      .addr    (dac_addr ),
-      .paen    (paen     ),
-      .pusepa  (usepa    ),
-      .pdelaym1(txdelaym1),
-      .ponm1   (txonm1   )
+      .clk     (clk              ),
+      .rst     (~runall || ~runtx),
+      .trig    (tx_trig          ),
+      .addr    (dac_addr         ),
+      .paen    (paen             ),
+      .pusepa  (usepa            ),
+      .pdelaym1(txdelaym1        ),
+      .ponm1   (txonm1           )
       );
    
    trigger trigger_inst
      (
       .clk         (clk         ),
-      .rst         (rst         ),
+      .run         (runall      ),
       .azimuth     (azimuth     ),
-      .aruntx      (aruntx      ),
-      .aprfcntm1   (aprfcntm1   ),
-      .aintcntm1   (aintcntm1   ),
-      .alowazi     (alowazi     ),
-      .ahghazi     (ahghazi     ),
-      .aantseq     (aantseq     ),
-      .ltch_var    (ltch_var    ),
+      .prfcntm1    (prfcntm1    ),
+      .intcntm1    (intcntm1    ),
+      .lowazi      (lowazi      ),
+      .hghazi      (hghazi      ),
+      .antseq      (antseq      ),
       .antenna     (antenna     ),
       .tx_trig     (tx_trig     ),
       .rx_trig     (rx_trig     ),
       .rx_trig_strt(rx_trig_strt),
       .rx_trig_last(rx_trig_last)
       );
-
-   async_debounce async_rst_inst
-     (
-      .clk    (clk ),
-      .adin   (arst),
-      .dout   (rst ),
-      .oneshot()
-      );   
 
 endmodule
    

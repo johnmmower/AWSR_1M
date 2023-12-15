@@ -9,10 +9,9 @@ module tx_main #(parameter ADDRBITS = 13)
    output reg [ADDRBITS-1:0] addr,  
    output reg 		     paen,     // turns on at trigger
 
-   // p vals are assumed static for run
-   input                     pusepa,
-   input [31:0] 	     pdelaym1, // delay to addr start
-   input [31:0] 	     ponm1     // delay to paen stop
+   input                     usepa,
+   input [31:0] 	     delaym1,  // delay to addr start
+   input [31:0] 	     onm1      // delay to paen stop
    );
 
    reg [31:0] cntr;

@@ -6,16 +6,11 @@ module trigger
    
    input [15:0]     azimuth,        // current antenna position
    
-   // a* vals latched at rst falling edge
-   input            aruntx,         // run transmitter
-   input [31:0]     aprfcntm1,      // prf dwell counter
-   input [15:0]     aintcntm1,      // integration counter
-   input [15:0]     alowazi,        // blanking start \__ note swap for blank over zero
-   input [15:0]     ahghazi,        // blanking stop  /   equality means no blank
-   input [7:0]      aantseq,        // antenna switch sequence
-
-   output reg       ltch_var,       // "time to latch the variables" pun on 
-                                    // cousin Tommy's "time to make the donuts"
+   input [31:0]     prfcntm1,       // prf dwell counter
+   input [15:0]     intcntm1,       // integration counter
+   input [15:0]     lowazi,         // blanking start \__ note swap for blank over zero
+   input [15:0]     hghazi,         // blanking stop  /   equality means no blank
+   input [7:0]      antseq,         // antenna switch sequence
 
    output     [1:0] antenna,        // set current antenna, jumps before rx start
    output reg       tx_trig,        // one-shot tx
@@ -26,8 +21,7 @@ module trigger
 
    wire run = ~rst;
    reg 	run_t1, run_t2, run_t3;
-   reg 	runtx;
-   
+      
    reg 	      dwell_trig;
    reg 	      dwell_trig_t1;
    reg 	      dwell_trig_t2;
@@ -37,12 +31,6 @@ module trigger
    reg [31:0] dwell_cntr;
 
    reg [15:0] int_cntr;
-
-   reg [31:0] prfcntm1;
-   reg [15:0] intcntm1;
-   reg [15:0] lowazi;
-   reg [15:0] hghazi;
-   reg [7:0]  antseq;
 
    reg 	      was_last;
    reg [15:0] azimuth_ant;
@@ -57,8 +45,10 @@ module trigger
    reg 	      rx_trig_m1;
    reg 	      rx_trig_strt_m1;
    reg 	      rx_trig_last_m1;
-   
-   assign antenna = antseq[1:0];
+
+   reg [7:0]  antseqs;
+      
+   assign antenna = antseqs[1:0];
       
    always @(posedge clk) begin
 
@@ -103,29 +93,6 @@ module trigger
 	if (dwell_trig_t4 && ~|int_cntr)
 	  blanked <= blanking;
       
-      // signal for local and 
-      // upper latch of variables
-      if (run && ~run_t1)
-	ltch_var <= 1;
-      else
-	ltch_var <= 0;
-
-      // set run but clear if rst
-      if (rst) 
-	runtx <= 0;
-      else if (ltch_var)
-	runtx <= aruntx;
-
-      // set variables from async 
-      if (ltch_var) begin
-	 prfcntm1 <= aprfcntm1;
-	 intcntm1 <= aintcntm1;
-	 lowazi <= alowazi;
-	 hghazi <= ahghazi;
-	 has_blank <= alowazi != ahghazi;
-	 azi_swap <= alowazi > ahghazi;
-      end
-      
       // count down
       if (run_t2 && (~run_t3 || dwell_cntr >= prfcntm1))
 	dwell_cntr <= 0;
@@ -138,7 +105,7 @@ module trigger
 	dwell_trig <= 0;
 
       // transmit?
-      if (dwell_trig_t5 && ~blanked && runtx)
+      if (dwell_trig_t5 && ~blanked)
 	tx_trig <= 1;
       else
 	tx_trig <= 0;
@@ -178,10 +145,10 @@ module trigger
 	    int_cntr <= int_cntr + 'b1;
       
       // antenna
-      if (ltch_var)
-	antseq <= { aantseq[5:0], aantseq[7:6] }; 
+      if (run && ~run_t1)
+	antseqs <= { antseq[5:0], antseq[7:6] }; 
       else if (dwell_trig && was_last)
-	antseq <= { antseq[1:0], antseq[7:2] };
+	antseqs <= { antseqs[1:0], antseqs[7:2] };
       
    end
       
