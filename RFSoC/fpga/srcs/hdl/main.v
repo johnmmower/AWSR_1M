@@ -3,36 +3,53 @@
 
 module main
   (
-   input 	ref_n,
-   input 	ref_p,
-   input 	sys_n,
-   input 	sys_p,
+   output 	 C0_DDR4_act_n,
+   output [16:0] C0_DDR4_adr,
+   output [1:0]  C0_DDR4_ba,
+   output [0:0]  C0_DDR4_bg,
+   output [0:0]  C0_DDR4_ck_c,
+   output [0:0]  C0_DDR4_ck_t,
+   output [0:0]  C0_DDR4_cke,
+   output [0:0]  C0_DDR4_cs_n,
+   inout [7:0] 	 C0_DDR4_dm_n,
+   inout [63:0]  C0_DDR4_dq,
+   inout [7:0] 	 C0_DDR4_dqs_c,
+   inout [7:0] 	 C0_DDR4_dqs_t,
+   output [0:0]  C0_DDR4_odt,
+   output 	 C0_DDR4_reset_n,
+   input 	 C0_SYS_CLK_clk_n,
+   input 	 C0_SYS_CLK_clk_p,
+
+   input 	 ref_n,
+   input 	 ref_p,
+   input 	 sys_n,
+   input 	 sys_p,
    
-   input 	adc0_clk_clk_n,
-   input 	adc0_clk_clk_p,
-   input 	dac0_clk_clk_n,
-   input 	dac0_clk_clk_p,
-   input 	dac1_clk_clk_n,
-   input 	dac1_clk_clk_p,
+   input 	 adc0_clk_clk_n,
+   input 	 adc0_clk_clk_p,
+   input 	 dac0_clk_clk_n,
+   input 	 dac0_clk_clk_p,
+   input 	 dac1_clk_clk_n,
+   input 	 dac1_clk_clk_p,
    
-   input 	sysref_in_diff_n,
-   input 	sysref_in_diff_p,
+   input 	 sysref_in_diff_n,
+   input 	 sysref_in_diff_p,
    
-   input 	vin0_01_v_n,
-   input 	vin0_01_v_p,
-   input 	vin0_23_v_n,
-   input 	vin0_23_v_p,
+   input 	 vin0_01_v_n,
+   input 	 vin0_01_v_p,
+   input 	 vin0_23_v_n,
+   input 	 vin0_23_v_p,
    
-   output 	vout00_v_n,
-   output 	vout00_v_p,
-   output 	vout10_v_n,
-   output 	vout10_v_p,
-   output 	vout13_v_n,
-   output 	vout13_v_p,
+   output 	 vout00_v_n,
+   output 	 vout00_v_p,
+   output 	 vout10_v_n,
+   output 	 vout10_v_p,
+   output 	 vout13_v_n,
+   output 	 vout13_v_p,
    
-   output [7:0] status,
+   output [7:0]  status,
    
-   output 	pmod1_3         // paen monitor
+   output 	 pmod1_3         // paen monitor
    );
 
    assign status[7:4] = 0;
@@ -272,6 +289,23 @@ module main
          
    design_main design_main_inst
      (
+      .C0_DDR4_act_n   (C0_DDR4_act_n   ),
+      .C0_DDR4_adr     (C0_DDR4_adr     ),
+      .C0_DDR4_ba      (C0_DDR4_ba      ),
+      .C0_DDR4_bg      (C0_DDR4_bg      ),
+      .C0_DDR4_ck_c    (C0_DDR4_ck_c    ),
+      .C0_DDR4_ck_t    (C0_DDR4_ck_t    ),
+      .C0_DDR4_cke     (C0_DDR4_cke     ),
+      .C0_DDR4_cs_n    (C0_DDR4_cs_n    ),
+      .C0_DDR4_dm_n    (C0_DDR4_dm_n    ),
+      .C0_DDR4_dq      (C0_DDR4_dq      ),
+      .C0_DDR4_dqs_c   (C0_DDR4_dqs_c   ),
+      .C0_DDR4_dqs_t   (C0_DDR4_dqs_t   ),
+      .C0_DDR4_odt     (C0_DDR4_odt     ),
+      .C0_DDR4_reset_n (C0_DDR4_reset_n ),
+      .C0_SYS_CLK_clk_n(C0_SYS_CLK_clk_n),
+      .C0_SYS_CLK_clk_p(C0_SYS_CLK_clk_p),
+
       .adc0_clk_clk_n  (adc0_clk_clk_n  ),
       .adc0_clk_clk_p  (adc0_clk_clk_p  ),
       .dac0_clk_clk_n  (dac0_clk_clk_n  ),
