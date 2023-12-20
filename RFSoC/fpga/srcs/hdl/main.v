@@ -96,21 +96,13 @@ module main
    wire [12:0] 	 dac_0_addr;
    wire 	 reset_fifo;
    
-   (* MARK_DEBUG = "TRUE" *)
    wire [127:0]  tdata_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    wire 	 tready_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    wire 	 tvalid_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    wire 	 tlast_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    wire 	 buf_error_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    wire 	 trg_error_ch0;
-   (* MARK_DEBUG = "TRUE" *)
    wire [15:0] 	 adc0_I;
-   (* MARK_DEBUG = "TRUE" *)
    wire [15:0] 	 adc0_Q;
 
    wire [127:0]  tdata_ch1;

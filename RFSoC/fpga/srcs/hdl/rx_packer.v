@@ -75,10 +75,14 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0, parameter ID=0)
    always @(posedge clk) begin
       
       if (itrig && itrig_strt)
-	tdata <= {`SYNC, cfg,
-                  sec,
+	tdata <= {samps, id, 6'd0, ant,
                   tic,
-                  6'b000000, ant, id, samps};
+                  sec,
+                  cfg, `SYNC};
+        //tdata <= {`SYNC, cfg,
+        //          sec,
+        //          tic,
+        //          6'b000000, ant, id, samps};
       else 
 	tdata <= bufdat;
 

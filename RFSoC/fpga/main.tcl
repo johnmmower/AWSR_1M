@@ -14,6 +14,9 @@ set origin_dir [file dirname [info script]]
 
 create_project main $origin_dir/main -part xczu28dr-ffvg1517-2-e
 
+set obj [current_project]
+set_property -name "board_part" -value "xilinx.com:zcu111:part0:1.4" -objects $obj
+
 add_files [glob srcs/hdl/*.v]
 add_files [glob srcs/hdl/*.vh]
 add_files -fileset constrs_1 [glob srcs/xdc/*.xdc]
