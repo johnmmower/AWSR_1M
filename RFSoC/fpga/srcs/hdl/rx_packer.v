@@ -58,8 +58,9 @@ module rx_packer #(parameter DEPTH=1024, parameter SIM=0, parameter ID=0)
       
    always @(posedge clk) begin
 
-      bufdat <= {bufdat[95:0], accum_Q, accum_I};
-
+      //bufdat <= {bufdat[95:0], accum_Q, accum_I};
+      bufdat <= {accum_Q, accum_I, bufdat[127:32]};
+      
       if (accum_vld)
 	if (&bufvld)
 	  bufvld <= 4'b0001;
