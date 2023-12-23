@@ -41,8 +41,9 @@ TXDELAY = 100e-9
 TXONOVER = 1000e-9
 PULSEDURATION = 1e-6
 CONFIG = 0xBABE
-SAMPLES = 16
-INT = 1
+SAMPLES = 512
+INT = 64
+SHIFT = 1 << 2
 
 def getHwBuildStr(ts):
     secs = ts & 0x3F
@@ -92,8 +93,8 @@ writeReg(CFG_REG_OFF, CONFIG)
 # set samples
 writeReg(SAMPSM1_SAMPS_CH0_REG_OFF, ((SAMPLES-1) << 16) | SAMPLES)
 
-# set shift, no shift, int is 1
-writeReg(SHIFT_CH0_REG_OFF, 0)
+# set shift
+writeReg(SHIFT_CH0_REG_OFF, SHIFT)
 
 # set rx delay, none
 writeReg(DELAYM1_CH0_REG_OFF, 15)

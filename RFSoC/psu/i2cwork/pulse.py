@@ -42,6 +42,9 @@ if not CW:
     except:
         print("no plot")
 
+with open('tx.dat', 'wb') as fid:
+    fid.write(s_c.tostring())
+        
 dev = open('/dev/mem', 'r+b')
 mem = mmap.mmap(dev.fileno(), RMSIZE, offset=RMBASE)
 

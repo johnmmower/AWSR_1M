@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     time.sleep(1)
     
-    with open('tmp.dat', 'wb') as fid:
+    with open('rx.dat', 'wb') as fid:
         fid.write(mem[0:N])
     
     print('done with %d bytes' % N)
