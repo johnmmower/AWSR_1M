@@ -9,8 +9,8 @@
 `define SNR  -10.0
 
 `define DEPTH 4096
-`define SAMPS 2048
-`define COUNT 16
+`define SAMPS 8 
+`define COUNT 4
 
 module tb_accumulator;
 

@@ -72,6 +72,12 @@ int setupXrfdc()
 
   return XRFDC_SUCCESS;
   
+}
+
+
+#endif
+
+
 
   /*
   Status = XRFdc_Reset(RFdcInstPtr, XRFDC_ADC_TILE, 0);
@@ -86,10 +92,7 @@ int setupXrfdc()
     return XRFDC_FAILURE;
   }
   */
-}
 
-
-#endif
 
   //Status = XRFdc_SetupFIFO(RFdcInstPtr, XRFDC_DAC_TILE, 1, 1);
 

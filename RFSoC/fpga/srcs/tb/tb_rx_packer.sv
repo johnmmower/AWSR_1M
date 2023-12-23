@@ -10,8 +10,9 @@
 
 `define DEPTH 64
 `define SAMPS 16
-`define COUNT 1
+`define COUNT 2
 `define DELAY 16
+`define TRIAL 3
 
 module tb_rx_packer;
 
@@ -50,7 +51,7 @@ module tb_rx_packer;
    localparam [15:0] sampsm1 = `SAMPS - 1;
    localparam [31:0] delaym1 = `DELAY - 1;
       
-   integer     i;
+   integer     i,r;
 
    always @(posedge clk)
      tic <= tic + 1;
@@ -107,26 +108,30 @@ module tb_rx_packer;
       #100;
       run = 1;
       #100;
+
+      for (r=0; r<`TRIAL; r=r+1) begin
       
-      for (i=0; i<`COUNT; i=i+1) begin
-	 
-	 if (i==0)
-	   if (`COUNT <= 1)
-	     do_trig(2'b11);
-	   else
-	     do_trig(2'b01);
-	 else if (i==(`COUNT-1))
-	   do_trig(2'b10);
-	 else
-	   do_trig(2'b00);
-	 
-	 #(dlys);
+	 for (i=0; i<`COUNT; i=i+1) begin
+	    
+	    if (i==0)
+	      if (`COUNT <= 1)
+		do_trig(2'b11);
+	      else
+		do_trig(2'b01);
+	    else if (i==(`COUNT-1))
+	      do_trig(2'b10);
+	    else
+	      do_trig(2'b00);
+	    
+	    #(dlys);
 
-      end
+	 end
 
-      $finish;
+	 $finish;
 
-   end 
+      end 
+
+   end
 
    rx_packer #(.DEPTH(`DEPTH), .SIM(1)) uut
      (
@@ -138,11 +143,11 @@ module tb_rx_packer;
       .sec(32'hDEADBEEF),
       .tic(tic),
       .ant(ant),
-      .pcfg(16'hBABE),
-      .psampsm1(sampsm1),
-      .pshift(shift),
-      .psamps(samps),
-      .pdelaym1(delaym1),
+      .cfg(16'hBABE),
+      .sampsm1(sampsm1),
+      .shift(shift),
+      .samps(samps),
+      .delaym1(delaym1),
       .rx_I(dataI),
       .rx_Q(dataQ),
       .tdata(tdata),
