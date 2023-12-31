@@ -1,1 +1,0 @@
-gcc -L/usr/local/lib clocksetup.c  -lmetal -lrfdc

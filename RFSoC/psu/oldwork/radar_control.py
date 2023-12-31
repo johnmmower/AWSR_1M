@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 
 import mmap
 from struct import pack, unpack
@@ -36,14 +37,14 @@ BUILDTIME_REG_OFF         = 0x40 # RO
 REG_ADDRESS = 0xA0050000
 
 FS = 215.04e6
-PRF = 25000
-TXDELAY = 100e-9
-TXONOVER = 1000e-9
-PULSEDURATION = 1e-6
+PRF = 4000
+TXDELAY = 2e-6
+TXONOVER = 2e-6
+PULSEDURATION = 40e-6
 CONFIG = 0xBABE
-SAMPLES = 512
-INT = 64
-SHIFT = 1 << 2
+SAMPLES = 10000
+INT = 8192
+SHIFT = 1 << 9
 
 def getHwBuildStr(ts):
     secs = ts & 0x3F
