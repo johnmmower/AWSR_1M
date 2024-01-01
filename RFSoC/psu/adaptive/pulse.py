@@ -31,7 +31,7 @@ def getAligned(newdata, stable):
 
 class Pulse(object):
 
-    def __init__(self, T):
+    def __init__(self, T=1e-6):
         self.T = T
         self.nr = int(round(FS * T)) + 2 * PAD
         assert(self.nr < MAXLEN)
@@ -53,11 +53,8 @@ class Pulse(object):
         return sc
 
     def massagePulse(self, newdata, rate=0.25):
-
         rx, tx = getAligned(newdata, self.golden)
-        
         self.pulse /= rms(self.pulse)
-        
         self.pulse += rate * (tx - rx)
         self.pulse *= SCLMAX / np.max(np.abs(self.pulse))
         
