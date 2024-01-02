@@ -3,58 +3,58 @@
 
 module proc #(parameter SIM = 0)
   (
-   input 	  arst,
+   input 		  arst,
    
-   input 	  aruntx,        // run transmitter
-   input 	  ausepa,        // tx with PA enabled
-   input 	  arunrx_ch0,    // use rx ch0
-   input 	  arunrx_ch1,    // use rx ch1
-   input [31:0]   atxdelaym1,    // delay to tx addr start - 1
-   input [31:0]   atxonm1,       // delay to paen stop - 1
-   input [31:0]   aprfcntm1,     // prf dwell counter - 1
-   input [15:0]   aintcntm1,     // integration counter - 1
-   input [15:0]   alowazi,       // blanking start \__ note swap for blank over zero 
-   input [15:0]   ahghazi,       // blanking stop  /   equality means no blank
-   input [7:0] 	  aantseq,       // antenna switch sequence
-   input [15:0]   acfg,          // data tag, channels tagged internally by ID
-   input [15:0]   asamps_ch0,    // number of samples, always psamps & 0xFFFC 
-   input [15:0]   asampsm1_ch0,  // number of samples, always psamps & 0xFFFC - 1
-   input [15:0]   ashift_ch0,    // number of bits to trim
-   input [31:0]   adelaym1_ch0,  // tics to delay to trig -1
-   input [15:0]   asamps_ch1,    // number of samples, always psamps & 0xFFFC 
-   input [15:0]   asampsm1_ch1,  // number of samples, always psamps & 0xFFFC - 1
-   input [15:0]   ashift_ch1,    // number of bits to trim
-   input [31:0]   adelaym1_ch1,  // tics to delay to trig -1
+   input 		  aruntx, // run transmitter
+   input 		  ausepa, // tx with PA enabled
+   input 		  arunrx_ch0, // use rx ch0
+   input 		  arunrx_ch1, // use rx ch1
+   input [31:0] 	  atxdelaym1, // delay to tx addr start - 1
+   input [31:0] 	  atxonm1, // delay to paen stop - 1
+   input [31:0] 	  aprfcntm1, // prf dwell counter - 1
+   input [15:0] 	  aintcntm1, // integration counter - 1
+   input [15:0] 	  alowazi, // blanking start \__ note swap for blank over zero 
+   input [15:0] 	  ahghazi, // blanking stop  /   equality means no blank
+   input [7:0] 		  aantseq, // antenna switch sequence
+   input [15:0] 	  acfg, // data tag, channels tagged internally by ID
+   input [15:0] 	  asamps_ch0, // number of samples, always psamps & 0xFFFC 
+   input [15:0] 	  asampsm1_ch0, // number of samples, always psamps & 0xFFFC - 1
+   input [15:0] 	  ashift_ch0, // number of bits to trim
+   input [31:0] 	  adelaym1_ch0, // tics to delay to trig -1
+   input [15:0] 	  asamps_ch1, // number of samples, always psamps & 0xFFFC 
+   input [15:0] 	  asampsm1_ch1, // number of samples, always psamps & 0xFFFC - 1
+   input [15:0] 	  ashift_ch1, // number of bits to trim
+   input [31:0] 	  adelaym1_ch1, // tics to delay to trig -1
 
-   input 	  clk,
-   output 	  rst,
+   input 		  clk,
+   output 		  rst,
    
-   input [31:0]   sec,           // current epoch
-   input [31:0]   tic,           // current tic
-   input [15:0]   azimuth,       // current antenna position
+   input [31:0] 	  sec, // current epoch
+   input [31:0] 	  tic, // current tic
+   input [15:0] 	  azimuth, // current antenna position
 
-   output [1:0]   antenna,       // set current antenna, jumps before rx start
+   output [1:0] 	  antenna, // set current antenna, jumps before rx start
 
-   output [12:0]  dac_addr,      // DAC RAM address
-   output 	  paen,          // turns on at trigger
+   output [`DAC_BITS-1:0] dac_addr, // DAC RAM address
+   output 		  paen, // turns on at trigger
 
-   input [15:0]   rx_I_ch0,
-   input [15:0]   rx_Q_ch0,
-   output [127:0] tdata_ch0,
-   input 	  tready_ch0,
-   output 	  tvalid_ch0,
-   output 	  tlast_ch0,
-   output 	  buf_error_ch0,
-   output 	  trg_error_ch0,
+   input [15:0] 	  rx_I_ch0,
+   input [15:0] 	  rx_Q_ch0,
+   output [127:0] 	  tdata_ch0,
+   input 		  tready_ch0,
+   output 		  tvalid_ch0,
+   output 		  tlast_ch0,
+   output 		  buf_error_ch0,
+   output 		  trg_error_ch0,
 
-   input [15:0]   rx_I_ch1,
-   input [15:0]   rx_Q_ch1,
-   output [127:0] tdata_ch1,
-   input 	  tready_ch1,
-   output 	  tvalid_ch1,
-   output 	  tlast_ch1,
-   output 	  buf_error_ch1,
-   output 	  trg_error_ch1
+   input [15:0] 	  rx_I_ch1,
+   input [15:0] 	  rx_Q_ch1,
+   output [127:0] 	  tdata_ch1,
+   input 		  tready_ch1,
+   output 		  tvalid_ch1,
+   output 		  tlast_ch1,
+   output 		  buf_error_ch1,
+   output 		  trg_error_ch1
    );
 
    wire ltch_var;
@@ -181,7 +181,7 @@ module proc #(parameter SIM = 0)
       .trg_error(trg_error_ch1      )
       );
    
-   tx_main tx_main_inst
+   tx_main #(.ADDR_BITS(`DAC_BITS)) tx_main_inst
      (
       .clk     (clk              ),
       .rst     (~runall || ~runtx),

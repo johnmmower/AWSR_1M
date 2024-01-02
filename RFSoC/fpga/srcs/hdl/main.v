@@ -63,6 +63,11 @@ module main
    wire   dac0_clk;
    wire   dac1_clk;
 
+   wire   a_freeze_cal_0;
+   wire   a_freeze_cal_1;
+   wire   a_allow_cal_0;
+   wire   a_allow_cal_1;
+     
    wire        a_reg_clk;
    wire        a_reg_rstn;
    wire [1023:0] a_reg_from_ps;
@@ -93,7 +98,7 @@ module main
 
    wire [31:0] 	 tic;
    wire [31:0] 	 sec;
-   wire [12:0] 	 dac_0_addr;
+   wire [`DAC_BITS-1:0] dac_0_addr;
    wire 	 reset_fifo;
    
    wire [127:0]  tdata_ch0;
@@ -204,9 +209,22 @@ module main
       .delaym1_ch1  (adelaym1_ch1 ),
       .buf_error_ch1(buf_error_ch1),
       .trg_error_ch1(trg_error_ch1),
-      .arst         (arst         )
+      .arst         (arst         ),
+      .allow_cal_0  (a_allow_cal_0),
+      .allow_cal_1  (a_allow_cal_1)
       );
 
+   cal_freeze cal_freeze_inst
+     (
+      .ref_clk     (ref_clk       ),
+      .dac_addr    (dac_0_addr    ),
+      .reg_clk     (reg_clk       ),
+      .allow_cal_0 (a_allow_cal_0 ),
+      .allow_cal_1 (a_allow_cal_1 ),
+      .freeze_cal_0(a_freeze_cal_0),
+      .freeze_cal_1(a_freeze_cal_1)
+      );
+      
    async_debounce async_rst_fifo_inst
      (
       .clk    (ref_clk    ),
@@ -346,7 +364,10 @@ module main
       .reg_clk         (a_reg_clk       ),
       .reg_rstn        (a_reg_rstn      ),
       .regs_out        (a_reg_from_ps   ),
-      .regs_in         (a_reg_to_ps     )
+      .regs_in         (a_reg_to_ps     ),
+
+      .freeze_cal_0    (a_freeze_cal_0  ),
+      .freeze_cal_1    (a_freeze_cal_1  )
       );
 
 endmodule

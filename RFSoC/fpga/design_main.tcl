@@ -300,6 +300,7 @@ proc create_root_design { parentCell } {
    CONFIG.FREQ_HZ {13440000} \
  ] $clk_dac1_13M44
   set dac_0_addr [ create_bd_port -dir I -from 12 -to 0 dac_0_addr ]
+  set freeze_cal [ create_bd_port -dir I freeze_cal ]
   set ref_clk [ create_bd_port -dir I -type clk -freq_hz 215040000 ref_clk ]
   set_property -dict [ list \
    CONFIG.ASSOCIATED_BUSIF {RX_1:RX_0} \
@@ -471,6 +472,7 @@ proc create_root_design { parentCell } {
    CONFIG.ADC_RESERVED_1_02 {false} \
    CONFIG.ADC_Slice02_Enable {true} \
    CONFIG.ADC_Slice03_Enable {true} \
+   CONFIG.Calibration_Freeze {true} \
    CONFIG.DAC0_Enable {1} \
    CONFIG.DAC0_Fabric_Freq {215.040} \
    CONFIG.DAC0_Multi_Tile_Sync {true} \
@@ -1268,6 +1270,10 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
 
   # Create port connections
   connect_bd_net -net VCC_dout [get_bd_pins VCC/dout] [get_bd_pins usp_rf_data_converter_0/m00_axis_tready] [get_bd_pins usp_rf_data_converter_0/m01_axis_tready] [get_bd_pins usp_rf_data_converter_0/m02_axis_tready] [get_bd_pins usp_rf_data_converter_0/m03_axis_tready] [get_bd_pins usp_rf_data_converter_0/m0_axis_aresetn] [get_bd_pins usp_rf_data_converter_0/s0_axis_aresetn] [get_bd_pins usp_rf_data_converter_0/s13_axis_tvalid] [get_bd_pins usp_rf_data_converter_0/s1_axis_aresetn] [get_bd_pins util_vector_logic_0/Op1]
+  connect_bd_net -net adc0_01_cal_frozen [get_bd_pins usp_rf_data_converter_0/adc0_01_cal_frozen]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets adc0_01_cal_frozen]
+  connect_bd_net -net adc0_23_cal_frozen [get_bd_pins usp_rf_data_converter_0/adc0_23_cal_frozen]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets adc0_23_cal_frozen]
   connect_bd_net -net addrb_0_1 [get_bd_ports dac_0_addr] [get_bd_pins blk_mem_gen_0/addrb]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets addrb_0_1]
   connect_bd_net -net axi32reg_0_regs_out [get_bd_ports regs_out] [get_bd_pins axi32reg_0/regs_out]
@@ -1280,6 +1286,8 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net blk_mem_gen_0_doutb [get_bd_pins blk_mem_gen_0/doutb] [get_bd_pins usp_rf_data_converter_0/s13_axis_tdata]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets blk_mem_gen_0_doutb]
   connect_bd_net -net ddr4_0_c0_ddr4_ui_clk [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins ddr4_0/c0_ddr4_ui_clk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk]
+  connect_bd_net -net freeze_cal_1 [get_bd_ports freeze_cal] [get_bd_pins usp_rf_data_converter_0/adc0_01_int_cal_freeze] [get_bd_pins usp_rf_data_converter_0/adc0_23_int_cal_freeze]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets freeze_cal_1]
   connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins ddr4_0/c0_ddr4_aresetn] [get_bd_pins proc_sys_reset_0/peripheral_aresetn]
   connect_bd_net -net proc_sys_reset_0_peripheral_reset [get_bd_pins ddr4_0/sys_rst] [get_bd_pins proc_sys_reset_0/peripheral_reset]
   connect_bd_net -net proc_sys_reset_1_peripheral_aresetn [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_0/S01_ARESETN] [get_bd_pins axi_interconnect_0/S02_ARESETN] [get_bd_pins proc_sys_reset_1/peripheral_aresetn]
