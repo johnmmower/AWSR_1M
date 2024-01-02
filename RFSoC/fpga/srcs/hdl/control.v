@@ -117,7 +117,7 @@ module control
    
    assign lowazi = reg_from_ps[`AZI_REG_OFF*32 +: 16];
    assign hghazi = reg_from_ps[`AZI_REG_OFF*32+16 +: 16];
-   assign reg_to_ps[`AZI_REG_REG_OFF*32 +: 32] = {hghazi, lowazi};
+   assign reg_to_ps[`AZI_REG_OFF*32 +: 32] = {hghazi, lowazi};
 
    assign cfg = reg_from_ps[`CFG_REG_OFF*32 +: 16];
    assign reg_to_ps[`CFG_REG_OFF*32 +: 32] = {16'b0, cfg};
@@ -127,7 +127,7 @@ module control
    assign reg_to_ps[`SAMPSM1_SAMPS_CH0_REG_OFF*32 +: 32] = {sampsm1_ch0, samps_ch0};
 
    assign shift_ch0 = reg_from_ps[`SHIFT_CH0_REG_OFF*32 +: 16];
-   assign reg_to_ps[`SHIFT_REG_OFF*32 +: 32] = {16'b0, shift_ch0};
+   assign reg_to_ps[`SHIFT_CH0_REG_OFF*32 +: 32] = {16'b0, shift_ch0};
    
    assign delaym1_ch0 = reg_from_ps[`DELAYM1_CH0_REG_OFF*32 +: 32];
    assign reg_to_ps[`DELAYM1_CH0_REG_OFF*32 +: 32] = delaym1_ch0;
@@ -137,7 +137,7 @@ module control
    assign reg_to_ps[`SAMPSM1_SAMPS_CH1_REG_OFF*32 +: 32] = {sampsm1_ch1, samps_ch1};
    
    assign shift_ch1 = reg_from_ps[`SHIFT_CH1_REG_OFF*32 +: 16];
-   assign reg_to_ps[`SHIFT_REG_OFF*32 +: 32] = {16'b0, shfit_ch1};
+   assign reg_to_ps[`SHIFT_CH1_REG_OFF*32 +: 32] = {16'b0, shfit_ch1};
    
    assign delaym1_ch1 = reg_from_ps[`DELAYM1_CH1_REG_OFF*32 +: 32];
    assign reg_to_ps[`DELAYM1_CH1_REG_OFF*32 +: 32] = delaym1_ch1;
