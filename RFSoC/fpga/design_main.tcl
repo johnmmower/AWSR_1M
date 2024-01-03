@@ -300,7 +300,8 @@ proc create_root_design { parentCell } {
    CONFIG.FREQ_HZ {13440000} \
  ] $clk_dac1_13M44
   set dac_0_addr [ create_bd_port -dir I -from 12 -to 0 dac_0_addr ]
-  set freeze_cal [ create_bd_port -dir I freeze_cal ]
+  set freeze_cal_0 [ create_bd_port -dir I freeze_cal_0 ]
+  set freeze_cal_1 [ create_bd_port -dir I freeze_cal_1 ]
   set ref_clk [ create_bd_port -dir I -type clk -freq_hz 215040000 ref_clk ]
   set_property -dict [ list \
    CONFIG.ASSOCIATED_BUSIF {RX_1:RX_0} \
@@ -1286,8 +1287,10 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net blk_mem_gen_0_doutb [get_bd_pins blk_mem_gen_0/doutb] [get_bd_pins usp_rf_data_converter_0/s13_axis_tdata]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets blk_mem_gen_0_doutb]
   connect_bd_net -net ddr4_0_c0_ddr4_ui_clk [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins ddr4_0/c0_ddr4_ui_clk] [get_bd_pins proc_sys_reset_0/slowest_sync_clk]
-  connect_bd_net -net freeze_cal_1 [get_bd_ports freeze_cal] [get_bd_pins usp_rf_data_converter_0/adc0_01_int_cal_freeze] [get_bd_pins usp_rf_data_converter_0/adc0_23_int_cal_freeze]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets freeze_cal_1]
+  connect_bd_net -net freeze_cal_0_1 [get_bd_ports freeze_cal_0] [get_bd_pins usp_rf_data_converter_0/adc0_01_int_cal_freeze]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets freeze_cal_0_1]
+  connect_bd_net -net freeze_cal_1_1 [get_bd_ports freeze_cal_1] [get_bd_pins usp_rf_data_converter_0/adc0_23_int_cal_freeze]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets freeze_cal_1_1]
   connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins ddr4_0/c0_ddr4_aresetn] [get_bd_pins proc_sys_reset_0/peripheral_aresetn]
   connect_bd_net -net proc_sys_reset_0_peripheral_reset [get_bd_pins ddr4_0/sys_rst] [get_bd_pins proc_sys_reset_0/peripheral_reset]
   connect_bd_net -net proc_sys_reset_1_peripheral_aresetn [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_0/S01_ARESETN] [get_bd_pins axi_interconnect_0/S02_ARESETN] [get_bd_pins proc_sys_reset_1/peripheral_aresetn]
