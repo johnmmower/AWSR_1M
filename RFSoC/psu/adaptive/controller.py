@@ -40,7 +40,7 @@ BUILDTIME_REG_OFF         = 0x40 # RO
 FS = 215.04e6
 PRF = 4000
 TXDELAY = 1e-6
-TXONOVER = 0e-6
+TXONOVER = 1e-6
 PULSEDURATION = 2e-6
 CONFIG = 0xBABE
 SAMPLES = int((TXDELAY+TXONOVER+PULSEDURATION)*1.25*FS)
@@ -60,7 +60,7 @@ class Controller(object):
 
     def __init__(self, base):
         self.dev = open('/dev/mem', 'r+b')
-        self.mem = mmap.mmap(dev.fileno(), 64*1024, offset=base)
+        self.mem = mmap.mmap(self.dev.fileno(), 64*1024, offset=base)
         self.setup()
 
     def __del__(self):
@@ -80,11 +80,17 @@ class Controller(object):
     def start(self):
         cntrl = self.readReg(CONTROL_REG_OFF)
         cntrl |= (1 << RUNSTART_BIT)
-        writeReg(CONTROL_REG_OFF, cntrl)
+        self.writeReg(CONTROL_REG_OFF, cntrl)
                 
     def getHwDate(self):
-        return getHwBuildStr(self.readReg(BUILDTIME_REG_OFF)))
-        
+        return getHwBuildStr(self.readReg(BUILDTIME_REG_OFF))
+
+    def getChLen(self):
+        d = self.readReg(CH1_CH0_MAXLEN_REG_OFF)
+        ch0len = d & 0xFFFF
+        ch1len = (d >> 16) & 0xFFFF
+        return ch1len, ch0len
+    
     def setup(self):
         self.halt()
         # set txdelaym1, ~500ns
@@ -103,7 +109,10 @@ class Controller(object):
         # set config
         self.writeReg(CFG_REG_OFF, CONFIG)
         # set samples
-        self.writeReg(SAMPSM1_SAMPS_CH0_REG_OFF, ((SAMPLES-1) << 16) | SAMPLES)
+        if SAMPLES % 4:
+            print("WARNING - SAMPLES not modulo 4, reducing")
+        samples = 4 * int(SAMPLES/4)
+        self.writeReg(SAMPSM1_SAMPS_CH0_REG_OFF, ((samples-1) << 16) | samples)
         # set shift
         self.writeReg(SHIFT_CH0_REG_OFF, SHIFT)
         # set rx delay, none
@@ -114,3 +123,22 @@ class Controller(object):
 
     def writeReg(self, offset, data):
         self.mem[offset:offset+4] = pack('<I', data)
+
+    def dumpRegs(self):
+        print("-----controller reg dump-----")
+        print("reading from 0X%08x" % self.base)
+        for i in range(32):
+            print("reg 0X%02x : 0X%08x" % (i, self.readReg(i*4)))
+        print("finished\n")
+
+    # turn off! ch is bitmask of <xx>
+    def calMode(self, ch=0):
+        cntrl = self.readReg(CONTROL_REG_OFF)
+        if ch == 0:
+            cntrl &= ~( (1 << ALLOW_CAL1_BIT) | (1 << ALLOW_CAL0_BIT) )
+        else:
+            if ch & 0x1:
+                cntrl |= 1 << ALLOW_CAL0_BIT
+            elif ch & 0x2:
+                cntrl |= 1 << ALLOW_CAL1_BIT
+        self.writeReg(CONTROL_REG_OFF, cntrl)
