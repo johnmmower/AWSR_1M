@@ -5,8 +5,9 @@ import numpy as np
 from matplotlib.pyplot import *
 import threading
 import time
+import subprocess
 
-from dma import DMA, SCLMAX
+from dma import DMA
 from controller import Controller, SAMPLES
 from pulse import *
 
@@ -27,11 +28,20 @@ pc = int(SCLMAX / np.sqrt(2)) * np.ones(PLSSIZE//2, dtype=np.int16)
 src[0:len(pc)*2] = pc.tostring()
 
 cnt = Controller(CTRBASE)
-cnt.calMode(1)
+cnt.prepareCalTx()
+cnt.calMode(ch=1)
+cnt.start()
 
 # run clock setup here, look for stall?
+prc = subprocess.Popen(["../zcu111clocking/a.out"])
+prc.wait()
+print('done with clock setup')
 
-cnt.calMode(0)
+time.sleep(1)
+cnt.halt()
+
+'''
+cnt.calMode(ch=0)
 
 pulse = pls.getPulse()
 pc = np.zeros(PLSSIZE//2, dtype=np.int16)
@@ -86,3 +96,4 @@ with open('data.npy', 'wb') as f:
     np.save(f, pulse)
     np.save(f, rx)
 
+'''

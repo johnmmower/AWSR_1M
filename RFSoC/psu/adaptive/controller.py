@@ -71,6 +71,10 @@ class Controller(object):
     def halt(self):
         self.writeReg(CONTROL_REG_OFF, 0)
 
+    def prepareCalTx(self):
+        cntrl = (1 << RUNTX_BIT)
+        self.writeReg(CONTROL_REG_OFF, cntrl)
+        
     def prepare(self):
         cntrl = (1 << RESET_FIFO_BIT)
         self.writeReg(CONTROL_REG_OFF, cntrl)
