@@ -65,8 +65,6 @@ module main
 
    wire   a_freeze_cal_0;
    wire   a_freeze_cal_1;
-   wire   a_allow_cal_0;
-   wire   a_allow_cal_1;
      
    wire        a_reg_clk;
    wire        a_reg_rstn;
@@ -179,52 +177,41 @@ module main
 
    control control_inst
      (
-      .reg_clk      (a_reg_clk    ),
-      .reg_rstn     (a_reg_rstn   ),
-      .reg_from_ps  (a_reg_from_ps),
-      .reg_to_ps    (a_reg_to_ps  ),
-      .nextsec      (a_nextsec    ),
-      .runtx        (aruntx       ),
-      .usepa        (ausepa       ),
-      .runrx_ch0    (arunrx_ch0   ),
-      .runrx_ch1    (arunrx_ch1   ),
-      .reset_fifo   (areset_fifo  ),
-      .txdelaym1    (atxdelaym1   ),
-      .txonm1       (atxonm1      ),
-      .prfcntm1     (aprfcntm1    ),
-      .intcntm1     (aintcntm1    ),
-      .lowazi       (alowazi      ),
-      .hghazi       (ahghazi      ),
-      .antseq       (aantseq      ),
-      .cfg          (acfg         ),
-      .samps_ch0    (asamps_ch0   ),
-      .sampsm1_ch0  (asampsm1_ch0 ),
-      .shift_ch0    (ashift_ch0   ),
-      .delaym1_ch0  (adelaym1_ch0 ),
-      .buf_error_ch0(buf_error_ch0),
-      .trg_error_ch0(trg_error_ch0),
-      .samps_ch1    (asamps_ch1   ),
-      .sampsm1_ch1  (asampsm1_ch1 ),
-      .shift_ch1    (ashift_ch1   ),
-      .delaym1_ch1  (adelaym1_ch1 ),
-      .buf_error_ch1(buf_error_ch1),
-      .trg_error_ch1(trg_error_ch1),
-      .arst         (arst         ),
-      .allow_cal_0  (a_allow_cal_0),
-      .allow_cal_1  (a_allow_cal_1)
+      .reg_clk      (a_reg_clk     ),
+      .reg_rstn     (a_reg_rstn    ),
+      .reg_from_ps  (a_reg_from_ps ),
+      .reg_to_ps    (a_reg_to_ps   ),
+      .nextsec      (a_nextsec     ),
+      .runtx        (aruntx        ),
+      .usepa        (ausepa        ),
+      .runrx_ch0    (arunrx_ch0    ),
+      .runrx_ch1    (arunrx_ch1    ),
+      .reset_fifo   (areset_fifo   ),
+      .txdelaym1    (atxdelaym1    ),
+      .txonm1       (atxonm1       ),
+      .prfcntm1     (aprfcntm1     ),
+      .intcntm1     (aintcntm1     ),
+      .lowazi       (alowazi       ),
+      .hghazi       (ahghazi       ),
+      .antseq       (aantseq       ),
+      .cfg          (acfg          ),
+      .samps_ch0    (asamps_ch0    ),
+      .sampsm1_ch0  (asampsm1_ch0  ),
+      .shift_ch0    (ashift_ch0    ),
+      .delaym1_ch0  (adelaym1_ch0  ),
+      .buf_error_ch0(buf_error_ch0 ),
+      .trg_error_ch0(trg_error_ch0 ),
+      .samps_ch1    (asamps_ch1    ),
+      .sampsm1_ch1  (asampsm1_ch1  ),
+      .shift_ch1    (ashift_ch1    ),
+      .delaym1_ch1  (adelaym1_ch1  ),
+      .buf_error_ch1(buf_error_ch1 ),
+      .trg_error_ch1(trg_error_ch1 ),
+      .arst         (arst          ),
+      .freeze_cal_0 (a_freeze_cal_0),
+      .freeze_cal_1 (a_freeze_cal_1)
       );
 
-   cal_freeze cal_freeze_inst
-     (
-      .ref_clk     (ref_clk       ),
-      .dac_addr    (dac_0_addr    ),
-      .reg_clk     (reg_clk       ),
-      .allow_cal_0 (a_allow_cal_0 ),
-      .allow_cal_1 (a_allow_cal_1 ),
-      .freeze_cal_0(a_freeze_cal_0),
-      .freeze_cal_1(a_freeze_cal_1)
-      );
-      
    async_debounce async_rst_fifo_inst
      (
       .clk    (ref_clk    ),

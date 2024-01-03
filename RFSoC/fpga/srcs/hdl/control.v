@@ -76,8 +76,8 @@ module control
    
    output 	   arst,
 
-   output 	   allow_cal_0,
-   output 	   allow_cal_1
+   output 	   freeze_cal_0,
+   output 	   freeze_cal_1
    );
    
    wire [31:0] 	   control = reg_from_ps[`CONTROL_REG_OFF*32 +: 32];
@@ -87,8 +87,8 @@ module control
    assign runrx_ch0 = control[`RUNRX_CH0_BIT];
    assign runrx_ch1 = control[`RUNRX_CH1_BIT];
    assign reset_fifo = control[`RESET_FIFO_BIT];
-   assign allow_cal_0 = control[`ALLOW_CAL0_BIT];
-   assign allow_cal_1 = control[`ALLOW_CAL1_BIT];
+   assign freeze_cal_0 = ~control[`ALLOW_CAL0_BIT];
+   assign freeze_cal_1 = ~control[`ALLOW_CAL1_BIT];
    assign reg_to_ps[`CONTROL_REG_OFF*32 +: 32] = control;
 
       
