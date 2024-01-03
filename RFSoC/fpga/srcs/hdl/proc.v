@@ -181,7 +181,7 @@ module proc #(parameter SIM = 0)
       .trg_error(trg_error_ch1      )
       );
    
-   tx_main #(.ADDR_BITS(`DAC_BITS)) tx_main_inst
+   tx_main #(.ADDRBITS(`DAC_BITS)) tx_main_inst
      (
       .clk     (clk              ),
       .rst     (~runall || ~runtx),
