@@ -137,7 +137,7 @@ module control
    assign reg_to_ps[`SAMPSM1_SAMPS_CH1_REG_OFF*32 +: 32] = {sampsm1_ch1, samps_ch1};
    
    assign shift_ch1 = reg_from_ps[`SHIFT_CH1_REG_OFF*32 +: 16];
-   assign reg_to_ps[`SHIFT_CH1_REG_OFF*32 +: 32] = {16'b0, shfit_ch1};
+   assign reg_to_ps[`SHIFT_CH1_REG_OFF*32 +: 32] = {16'b0, shift_ch1};
    
    assign delaym1_ch1 = reg_from_ps[`DELAYM1_CH1_REG_OFF*32 +: 32];
    assign reg_to_ps[`DELAYM1_CH1_REG_OFF*32 +: 32] = delaym1_ch1;
